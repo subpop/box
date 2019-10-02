@@ -4,7 +4,8 @@ import (
 	"errors"
 	"fmt"
 	"io/ioutil"
-	"net/http"
+	"os"
+	"path/filepath"
 
 	"github.com/subpop/go-ini"
 )
@@ -23,32 +24,36 @@ type image struct {
 	Size           uint64            `ini:"size"`
 	CompressedSize uint64            `ini:"compressed_size"`
 	Expand         string            `ini:"expand"`
+	Notes          string            `ini:"notes"`
 }
 
 type index struct {
 	Images []image `ini:"*"`
 }
 
-// refresh downloads index data from builder.libguestfs.org and decodes
-// it into i.
-func (i *index) refresh() error {
-	res, err := http.Get(baseURL + "index")
+func newIndex() (i index, err error) {
+	imagesDir, err := getImagesDir()
 	if err != nil {
-		return err
-	}
-	defer res.Body.Close()
-
-	data, err := ioutil.ReadAll(res.Body)
-	if err != nil {
-		return err
+		return
 	}
 
-	err = ini.UnmarshalWithOptions(data, i, ini.Options{AllowMultilineValues: true})
+	f, err := os.Open(filepath.Join(imagesDir, "index"))
 	if err != nil {
-		return err
+		return
+	}
+	defer f.Close()
+
+	data, err := ioutil.ReadAll(f)
+	if err != nil {
+		return
 	}
 
-	return nil
+	err = ini.UnmarshalWithOptions(data, &i, ini.Options{AllowMultilineValues: true})
+	if err != nil {
+		return
+	}
+
+	return
 }
 
 // getImage looks up an image by name and arch in the index

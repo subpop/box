@@ -21,6 +21,10 @@ func main() {
 					Name:   "list",
 					Action: imageList,
 				},
+				{
+					Name:   "sync",
+					Action: imageSync,
+				},
 			},
 		},
 	}
