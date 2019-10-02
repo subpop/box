@@ -15,6 +15,19 @@ func main() {
 	app.Name = "box"
 	app.Commands = []cli.Command{
 		{
+			Name:   "create",
+			Action: create,
+			Flags: []cli.Flag{
+				cli.StringFlag{
+					Name: "n,name",
+				},
+				cli.StringFlag{
+					Name:     "i,image",
+					Required: true,
+				},
+			},
+		},
+		{
 			Name: "image",
 			Subcommands: []cli.Command{
 				{
