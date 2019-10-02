@@ -1,8 +1,6 @@
 package main
 
 import (
-	"errors"
-	"fmt"
 	"io/ioutil"
 	"os"
 	"path/filepath"
@@ -54,22 +52,4 @@ func newIndex() (i index, err error) {
 	}
 
 	return
-}
-
-// getImage looks up an image by name and arch in the index
-func (i *index) getImage(name, arch string) (*image, error) {
-	if name == "" {
-		return nil, errors.New("name cannot be empty")
-	}
-	if arch == "" {
-		arch = "x86_64"
-	}
-
-	for _, image := range i.Images {
-		if image.ININame == name && image.Arch == arch {
-			return &image, nil
-		}
-	}
-
-	return nil, fmt.Errorf("no image with name %q and arch %q", name, arch)
 }
