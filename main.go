@@ -39,6 +39,19 @@ func main() {
 						},
 					},
 				},
+				{
+					Name:   "remove",
+					Action: imageRemove,
+					Flags: []cli.Flag{
+						cli.StringFlag{
+							Name:     "n,name",
+							Required: true,
+						},
+						cli.BoolFlag{
+							Name: "force",
+						},
+					},
+				},
 			},
 		},
 	}
