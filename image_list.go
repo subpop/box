@@ -8,10 +8,10 @@ import (
 	"github.com/urfave/cli"
 )
 
-func imageList(c *cli.Context) (err error) {
-	var index index
-	if err = index.refresh(); err != nil {
-		return
+func imageList(c *cli.Context) error {
+	index, err := newIndex()
+	if err != nil {
+		return err
 	}
 
 	w := tabwriter.NewWriter(os.Stdout, 0, 0, 2, ' ', 0)
@@ -21,5 +21,5 @@ func imageList(c *cli.Context) (err error) {
 	}
 	w.Flush()
 
-	return
+	return nil
 }
