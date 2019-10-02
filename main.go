@@ -25,6 +25,20 @@ func main() {
 					Name:   "sync",
 					Action: imageSync,
 				},
+				{
+					Name:   "get",
+					Action: imageGet,
+					Flags: []cli.Flag{
+						cli.StringFlag{
+							Name:     "n,name",
+							Required: true,
+						},
+						cli.StringFlag{
+							Name:  "a,arch",
+							Value: "x86_64",
+						},
+					},
+				},
 			},
 		},
 	}
