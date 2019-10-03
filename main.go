@@ -76,6 +76,20 @@ func main() {
 			},
 		},
 		{
+			Name:   "connect",
+			Action: connect,
+			Flags: []cli.Flag{
+				cli.StringFlag{
+					Name:     "name,n",
+					Required: true,
+				},
+				cli.StringFlag{
+					Name:  "mode,m",
+					Value: "ssh",
+				},
+			},
+		},
+		{
 			Name: "image",
 			Subcommands: []cli.Command{
 				{
