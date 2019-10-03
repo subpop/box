@@ -49,6 +49,16 @@ func main() {
 			},
 		},
 		{
+			Name:   "up",
+			Action: up,
+			Flags: []cli.Flag{
+				cli.StringFlag{
+					Name:     "name,n",
+					Required: true,
+				},
+			},
+		},
+		{
 			Name: "image",
 			Subcommands: []cli.Command{
 				{
