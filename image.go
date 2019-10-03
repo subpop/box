@@ -1,9 +1,12 @@
 package main
 
 import (
+	"fmt"
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"strings"
+	"text/tabwriter"
 
 	"github.com/subpop/go-ini"
 )
@@ -52,4 +55,20 @@ func newIndex() (i index, err error) {
 	}
 
 	return
+}
+
+func (i image) String() string {
+	var b strings.Builder
+	w := tabwriter.NewWriter(&b, 0, 0, 2, ' ', 0)
+	fmt.Fprintf(w, "NAME\t%v\n", i.Name)
+	fmt.Fprintf(w, "OSINFO\t%v\n", i.OSInfo)
+	fmt.Fprintf(w, "ARCH\t%v\n", i.Arch)
+	fmt.Fprintf(w, "FILE\t%v\n", i.File)
+	fmt.Fprintf(w, "REVISION\t%v\n", i.Revision)
+	fmt.Fprintf(w, "CHECKSUM\t%v\n", i.Checksum)
+	fmt.Fprintf(w, "FORMAT\t%v\n", i.Format)
+	fmt.Fprintf(w, "SIZE\t%v\n", i.Size)
+	fmt.Fprintf(w, "NOTES\n%v\n", i.Notes)
+	w.Flush()
+	return b.String()
 }
