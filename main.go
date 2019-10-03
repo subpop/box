@@ -40,6 +40,15 @@ func main() {
 			},
 		},
 		{
+			Name:   "destroy",
+			Action: destroy,
+			Flags: []cli.Flag{
+				cli.BoolFlag{
+					Name: "force",
+				},
+			},
+		},
+		{
 			Name: "image",
 			Subcommands: []cli.Command{
 				{
