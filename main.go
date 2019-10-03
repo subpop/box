@@ -43,8 +43,12 @@ func main() {
 			Name:   "destroy",
 			Action: destroy,
 			Flags: []cli.Flag{
+				cli.StringFlag{
+					Name:     "name,n",
+					Required: true,
+				},
 				cli.BoolFlag{
-					Name: "force",
+					Name: "force,f",
 				},
 			},
 		},
