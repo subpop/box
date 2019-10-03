@@ -28,6 +28,18 @@ func main() {
 			},
 		},
 		{
+			Name:   "list",
+			Action: list,
+			Flags: []cli.Flag{
+				cli.BoolFlag{
+					Name: "all",
+				},
+				cli.BoolFlag{
+					Name: "inactive",
+				},
+			},
+		},
+		{
 			Name: "image",
 			Subcommands: []cli.Command{
 				{
