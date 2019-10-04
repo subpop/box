@@ -154,5 +154,5 @@ func connectSSH(c *cli.Context, dom *libvirt.Domain) error {
 }
 
 func connectConsole(c *cli.Context, dom *libvirt.Domain) error {
-	return nil
+	return fmt.Errorf("not implemented")
 }
