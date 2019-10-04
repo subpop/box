@@ -46,20 +46,18 @@ func create(c *cli.Context) error {
 	domain.UUID = uuid.New().String()
 	domain.Name = name
 
-	{
-		overlayImagePath := filepath.Join(imagesDir, domain.UUID+".qcow2")
-		cmd := exec.Command("qemu-img",
-			"create",
-			"-f",
-			"qcow2",
-			"-o",
-			fmt.Sprintf("backing_file=%v", baseImagePath),
-			overlayImagePath)
-		if err := cmd.Run(); err != nil {
-			return err
-		}
-		domain.Devices.Disks[0].Source.File = overlayImagePath
+	overlayImagePath := filepath.Join(imagesDir, domain.UUID+".qcow2")
+	cmd := exec.Command("qemu-img",
+		"create",
+		"-f",
+		"qcow2",
+		"-o",
+		fmt.Sprintf("backing_file=%v", baseImagePath),
+		overlayImagePath)
+	if err := cmd.Run(); err != nil {
+		return err
 	}
+	domain.Devices.Disks[0].Source.File = overlayImagePath
 
 	data, err := xml.Marshal(domain)
 	if err != nil {
