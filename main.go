@@ -87,6 +87,10 @@ func main() {
 					Name:  "mode,m",
 					Value: "ssh",
 				},
+				cli.StringFlag{
+					Name:  "user,u",
+					Value: "root",
+				},
 			},
 		},
 		{
