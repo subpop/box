@@ -78,7 +78,7 @@ func connectSSH(c *cli.Context, dom *libvirt.Domain) error {
 	if len(addrs) > 1 {
 		fmt.Println("Multiple addresses detected.")
 		for i, addr := range addrs {
-			fmt.Printf("%v: %v\n", i, addr)
+			fmt.Printf("%v: %v\n", i+1, addr)
 		}
 		fmt.Println("Select address: ")
 		var response int
