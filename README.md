@@ -3,6 +3,12 @@
 `box` is a command line utility that provides a high-level interface to create
 and manage virtual machines through libvirt.
 
+# Installation #
+
+```bash
+go get -u github.com/subpop/box
+```
+
 # Usage #
 
 Download a base image:
