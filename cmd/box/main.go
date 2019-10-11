@@ -59,8 +59,10 @@ func main() {
 			},
 		},
 		{
-			Name:   "destroy",
-			Action: destroy,
+			Name: "destroy",
+			Action: func(c *cli.Context) error {
+				return box.Destroy(c.String("name"), c.Int("id"), c.Bool("force"))
+			},
 			Flags: []cli.Flag{
 				cli.StringFlag{
 					Name:     "name,n",
