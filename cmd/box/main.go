@@ -74,8 +74,10 @@ func main() {
 			},
 		},
 		{
-			Name:   "up",
-			Action: up,
+			Name: "up",
+			Action: func(c *cli.Context) error {
+				return box.Up(c.String("name"))
+			},
 			Flags: []cli.Flag{
 				cli.StringFlag{
 					Name:     "name,n",

@@ -4,16 +4,16 @@ import (
 	"fmt"
 
 	"github.com/libvirt/libvirt-go"
-	"github.com/urfave/cli"
 )
 
-func up(c *cli.Context) error {
+// Up looks up a defined domain by name and starts it.
+func Up(name string) error {
 	conn, err := libvirt.NewConnect("")
 	if err != nil {
 		return err
 	}
 
-	dom, err := conn.LookupDomainByName(c.String("name"))
+	dom, err := conn.LookupDomainByName(name)
 	if err != nil {
 		return err
 	}
