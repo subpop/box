@@ -17,17 +17,14 @@ import (
 	"github.com/dustin/go-humanize"
 	"github.com/gosuri/uiprogress"
 	"github.com/ulikunitz/xz"
-	"github.com/urfave/cli"
 )
 
-func imageGet(c *cli.Context) error {
+// ImageGet downloads and prepares a disk image for use as a backing disk image.
+func ImageGet(name, arch string) error {
 	index, err := newIndex()
 	if err != nil {
 		return err
 	}
-
-	name := c.String("name")
-	arch := c.String("arch")
 
 	var image image
 	for _, i := range index.Images {

@@ -4,11 +4,10 @@ import (
 	"fmt"
 	"os"
 	"text/tabwriter"
-
-	"github.com/urfave/cli"
 )
 
-func imageList(c *cli.Context) error {
+// ImageList prints a list of available images.
+func ImageList() error {
 	index, err := newIndex()
 	if err != nil {
 		return err

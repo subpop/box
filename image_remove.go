@@ -5,13 +5,11 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
-
-	"github.com/urfave/cli"
 )
 
-func imageRemove(c *cli.Context) error {
-	name := c.String("name")
-
+// ImageRemove deletes image name from image storage directory. If force is
+// true, the image is deleted without prompting for confirmation.
+func ImageRemove(name string, force bool) error {
 	imagesDir, err := getImagesDir()
 	if err != nil {
 		return err
@@ -22,7 +20,7 @@ func imageRemove(c *cli.Context) error {
 		return err
 	}
 
-	if !c.Bool("force") {
+	if !force {
 		fmt.Printf("Are you sure you want to remove %v? (y/N) ", name+".qcow2")
 		var response string
 		if _, err := fmt.Scan(&response); err != nil {

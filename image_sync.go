@@ -5,11 +5,10 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
-
-	"github.com/urfave/cli"
 )
 
-func imageSync(c *cli.Context) error {
+// ImageSync downloads the latest index and caches it.
+func ImageSync() error {
 	// TODO: Respect E-Tag
 	resp, err := http.Get(baseURL + "index")
 	if err != nil {

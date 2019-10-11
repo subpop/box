@@ -124,16 +124,22 @@ func main() {
 			Name: "image",
 			Subcommands: []cli.Command{
 				{
-					Name:   "list",
-					Action: imageList,
+					Name: "list",
+					Action: func(c *cli.Context) error {
+						return box.ImageList()
+					},
 				},
 				{
-					Name:   "sync",
-					Action: imageSync,
+					Name: "sync",
+					Action: func(c *cli.Context) error {
+						return box.ImageSync()
+					},
 				},
 				{
-					Name:   "info",
-					Action: imageInfo,
+					Name: "info",
+					Action: func(c *cli.Context) error {
+						return box.ImageInfo(c.String("name"), c.String("arch"))
+					},
 					Flags: []cli.Flag{
 						cli.StringFlag{
 							Name:     "name,n",
@@ -146,8 +152,10 @@ func main() {
 					},
 				},
 				{
-					Name:   "get",
-					Action: imageGet,
+					Name: "get",
+					Action: func(c *cli.Context) error {
+						return box.ImageGet(c.String("name"), c.String("arch"))
+					},
 					Flags: []cli.Flag{
 						cli.StringFlag{
 							Name:     "n,name",
@@ -160,8 +168,10 @@ func main() {
 					},
 				},
 				{
-					Name:   "remove",
-					Action: imageRemove,
+					Name: "remove",
+					Action: func(c *cli.Context) error {
+						return box.ImageRemove(c.String("name"), c.Bool("force"))
+					},
 					Flags: []cli.Flag{
 						cli.StringFlag{
 							Name:     "n,name",
