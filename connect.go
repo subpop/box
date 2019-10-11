@@ -11,6 +11,8 @@ import (
 	"golang.org/x/crypto/ssh/terminal"
 )
 
+const escapeSequence = byte(']') ^ 0x40
+
 // Connect opens a connection to a domain by name. The mode argument determines
 // the connection mode: either "ssh" or "console".
 func Connect(name string, mode string, user string) error {
@@ -160,6 +162,13 @@ func connectSSH(dom *libvirt.Domain, user string) error {
 func connectConsole(dom *libvirt.Domain) error {
 	var err error
 
+	name, err := dom.GetName()
+	if err != nil {
+		return err
+	}
+	fmt.Println("Connected to " + name)
+	fmt.Println("Escape character is ^]")
+
 	conn, err := dom.DomainGetConnect()
 	if err != nil {
 		return err
@@ -209,6 +218,9 @@ func connectConsole(dom *libvirt.Domain) error {
 			}
 
 			if got > 0 {
+				if buf[0] == escapeSequence {
+					break
+				}
 				_, err = stream.Send(buf)
 				if err != nil {
 					fmt.Println(err)
