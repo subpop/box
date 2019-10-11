@@ -7,12 +7,13 @@ import (
 	"sync"
 
 	"github.com/libvirt/libvirt-go"
-	"github.com/urfave/cli"
 	"golang.org/x/crypto/ssh"
 	"golang.org/x/crypto/ssh/terminal"
 )
 
-func connect(c *cli.Context) error {
+// Connect opens a connection to a domain by name. The mode argument determines
+// the connection mode: either "ssh" or "console".
+func Connect(name string, mode string, user string) error {
 	var err error
 
 	conn, err := libvirt.NewConnect("")
@@ -21,26 +22,25 @@ func connect(c *cli.Context) error {
 	}
 
 	var dom *libvirt.Domain
-	dom, err = conn.LookupDomainByName(c.String("name"))
+	dom, err = conn.LookupDomainByName(name)
 	if err != nil {
 		return err
 	}
 	defer dom.Free()
 
-	mode := c.String("mode")
 	switch mode {
 	case "ssh":
-		return connectSSH(c, dom)
+		return connectSSH(dom, user)
 	case "console":
-		return connectConsole(c, dom)
+		return connectConsole(dom)
 	default:
 		return fmt.Errorf("error: unsupported connection mode: %v", mode)
 	}
 }
 
-func connectSSH(c *cli.Context, dom *libvirt.Domain) error {
+func connectSSH(dom *libvirt.Domain, user string) error {
 	config := &ssh.ClientConfig{
-		User: c.String("user"),
+		User: user,
 		Auth: []ssh.AuthMethod{
 			// TODO: Add PublicKeyAuthentication
 			ssh.RetryableAuthMethod(ssh.PasswordCallback(func() (secret string, err error) {
@@ -157,7 +157,7 @@ func connectSSH(c *cli.Context, dom *libvirt.Domain) error {
 // TODO: trap and restore signals
 // TODO: handle echoing in terminal mode
 // TODO: escape char signal
-func connectConsole(c *cli.Context, dom *libvirt.Domain) error {
+func connectConsole(dom *libvirt.Domain) error {
 	var err error
 
 	conn, err := dom.DomainGetConnect()

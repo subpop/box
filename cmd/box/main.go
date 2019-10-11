@@ -101,8 +101,10 @@ func main() {
 			},
 		},
 		{
-			Name:   "connect",
-			Action: connect,
+			Name: "connect",
+			Action: func(c *cli.Context) error {
+				return box.Connect(c.String("name"), c.String("mode"), c.String("user"))
+			},
 			Flags: []cli.Flag{
 				cli.StringFlag{
 					Name:     "name,n",
