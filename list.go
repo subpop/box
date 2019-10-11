@@ -7,22 +7,23 @@ import (
 	"text/tabwriter"
 
 	"github.com/libvirt/libvirt-go"
-	"github.com/urfave/cli"
 )
 
-func list(c *cli.Context) error {
+// List prints a list of boxes. If active is true, active boxes are included
+// in the list. Likewise for inactive.
+func List(active, inactive bool) error {
 	conn, err := libvirt.NewConnect("")
 	if err != nil {
 		return err
 	}
 	defer conn.Close()
 
-	flags := libvirt.CONNECT_LIST_DOMAINS_ACTIVE
-	if c.Bool("all") {
-		flags |= libvirt.CONNECT_LIST_DOMAINS_INACTIVE
+	var flags libvirt.ConnectListAllDomainsFlags
+	if active {
+		flags |= libvirt.CONNECT_LIST_DOMAINS_ACTIVE
 	}
-	if c.Bool("inactive") {
-		flags = libvirt.CONNECT_LIST_DOMAINS_INACTIVE
+	if inactive {
+		flags |= libvirt.CONNECT_LIST_DOMAINS_INACTIVE
 	}
 
 	domains, err := conn.ListAllDomains(flags)

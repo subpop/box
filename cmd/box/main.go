@@ -4,6 +4,8 @@ import (
 	"log"
 	"os"
 
+	"github.com/subpop/box"
+
 	"github.com/urfave/cli"
 )
 
@@ -28,8 +30,23 @@ func main() {
 			},
 		},
 		{
-			Name:   "list",
-			Action: list,
+			Name: "list",
+			Action: func(c *cli.Context) error {
+				active := true
+				inactive := false
+
+				if c.Bool("inactive") {
+					active = false
+					inactive = true
+				}
+
+				if c.Bool("all") {
+					active = true
+					inactive = true
+				}
+
+				return box.List(active, inactive)
+			},
 			Flags: []cli.Flag{
 				cli.BoolFlag{
 					Name: "all",
