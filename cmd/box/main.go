@@ -86,8 +86,10 @@ func main() {
 			},
 		},
 		{
-			Name:   "down",
-			Action: down,
+			Name: "down",
+			Action: func(c *cli.Context) error {
+				return box.Down(c.String("name"), c.Int("id"), c.Bool("force"))
+			},
 			Flags: []cli.Flag{
 				cli.StringFlag{
 					Name:     "name,n",
