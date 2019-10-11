@@ -17,8 +17,10 @@ func main() {
 	app.Name = "box"
 	app.Commands = []cli.Command{
 		{
-			Name:   "create",
-			Action: create,
+			Name: "create",
+			Action: func(c *cli.Context) error {
+				return box.Create(c.String("name"), c.String("image"))
+			},
 			Flags: []cli.Flag{
 				cli.StringFlag{
 					Name: "n,name",
