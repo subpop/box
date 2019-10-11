@@ -4,7 +4,9 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"os/signal"
 	"sync"
+	"syscall"
 
 	"github.com/libvirt/libvirt-go"
 	"golang.org/x/crypto/ssh"
@@ -174,6 +176,14 @@ func connectConsole(dom *libvirt.Domain) error {
 		return err
 	}
 
+	oldstate, err := terminal.MakeRaw(int(os.Stdin.Fd()))
+	if err != nil {
+		return err
+	}
+	defer terminal.Restore(int(os.Stdin.Fd()), oldstate)
+
+	signal.Ignore(syscall.SIGQUIT, syscall.SIGTERM, syscall.SIGINT, syscall.SIGHUP, syscall.SIGPIPE)
+
 	stream, err := conn.NewStream(0)
 	if err != nil {
 		return err
@@ -235,6 +245,8 @@ func connectConsole(dom *libvirt.Domain) error {
 	for !quit {
 		cond.Wait()
 	}
+
+	signal.Reset()
 
 	return nil
 }
