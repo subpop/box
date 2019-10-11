@@ -18,7 +18,8 @@ func init() {
 	rand.Seed(time.Now().UTC().UnixNano())
 }
 
-// Create defines and starts a new box with name and base image.
+// Create defines a new domain using name and creating a disk image backed by
+// image.
 func Create(name, image string) error {
 	if name == "" {
 		name = petname.Generate(2, "-")
