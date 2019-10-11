@@ -1,9 +1,10 @@
-package main
+package box
 
 import (
 	"fmt"
 	"io"
 	"os"
+	"sync"
 
 	"github.com/libvirt/libvirt-go"
 	"github.com/urfave/cli"
@@ -153,6 +154,75 @@ func connectSSH(c *cli.Context, dom *libvirt.Domain) error {
 	return nil
 }
 
+// TODO: trap and restore signals
+// TODO: handle echoing in terminal mode
+// TODO: escape char signal
 func connectConsole(c *cli.Context, dom *libvirt.Domain) error {
-	return fmt.Errorf("not implemented")
+	var err error
+
+	conn, err := dom.DomainGetConnect()
+	if err != nil {
+		return err
+	}
+
+	stream, err := conn.NewStream(0)
+	if err != nil {
+		return err
+	}
+
+	if err := dom.OpenConsole("", stream, libvirt.DOMAIN_CONSOLE_SAFE); err != nil {
+		return err
+	}
+
+	cond := sync.NewCond(&sync.Mutex{})
+	cond.L.Lock()
+	defer cond.L.Unlock()
+	var quit bool
+
+	go func() {
+		for !quit {
+			buf := make([]byte, 1024)
+			got, err := stream.Recv(buf)
+			if err != nil {
+				fmt.Println(err)
+				break
+			}
+			if got > 0 {
+				_, err := os.Stdout.Write(buf)
+				if err != nil {
+					fmt.Println(err)
+					break
+				}
+			}
+		}
+		quit = true
+		cond.Broadcast()
+	}()
+
+	go func() {
+		for !quit {
+			buf := make([]byte, 1024)
+			got, err := os.Stdin.Read(buf)
+			if err != nil && err != io.EOF {
+				fmt.Println(err)
+				break
+			}
+
+			if got > 0 {
+				_, err = stream.Send(buf)
+				if err != nil {
+					fmt.Println(err)
+					break
+				}
+			}
+		}
+		quit = true
+		cond.Broadcast()
+	}()
+
+	for !quit {
+		cond.Wait()
+	}
+
+	return nil
 }
