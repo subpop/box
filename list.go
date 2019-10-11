@@ -9,8 +9,9 @@ import (
 	"github.com/libvirt/libvirt-go"
 )
 
-// List prints a list of boxes. If active is true, active boxes are included
-// in the list. Likewise for inactive.
+// List prints a list of known domains. If active is true, active domains are
+// included in the list. If inactive is true, inactive domains are included
+// in the list.
 func List(active, inactive bool) error {
 	conn, err := libvirt.NewConnect("")
 	if err != nil {
