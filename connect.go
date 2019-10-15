@@ -158,9 +158,6 @@ func connectSSH(dom *libvirt.Domain, user string) error {
 	return nil
 }
 
-// TODO: trap and restore signals
-// TODO: handle echoing in terminal mode
-// TODO: escape char signal
 func connectConsole(dom *libvirt.Domain) error {
 	var err error
 
