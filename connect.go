@@ -198,45 +198,71 @@ func connectConsole(dom *libvirt.Domain) error {
 	defer cond.L.Unlock()
 	var quit bool
 
+	// read from stream and write to stdout
 	go func() {
+		var err error
 		for !quit {
-			buf := make([]byte, 1024)
-			got, err := stream.Recv(buf)
-			if err != nil {
-				fmt.Println(err)
-				break
-			}
-			if got > 0 {
-				_, err := os.Stdout.Write(buf)
+			var buf []byte
+			var got, sent int
+
+			buf = make([]byte, 1024)
+
+			// read from the stream, continuing if no bytes are read
+			got, err = stream.Recv(buf)
+			if got == 0 {
 				if err != nil {
-					fmt.Println(err)
+					break
+				}
+				continue
+			}
+
+			// write to stdout
+			sent, err = os.Stdout.Write(buf)
+			if sent != len(buf) {
+				if err != nil {
 					break
 				}
 			}
+		}
+		if err != nil {
+			fmt.Println(err)
 		}
 		quit = true
 		cond.Broadcast()
 	}()
 
+	// read from stdin and write to stream
 	go func() {
+		var err error
 		for !quit {
-			buf := make([]byte, 1024)
-			got, err := os.Stdin.Read(buf)
-			if err != nil && err != io.EOF {
-				fmt.Println(err)
+			var buf []byte
+			var got, sent int
+
+			buf = make([]byte, 1024)
+
+			// read from stdin, continuing if no bytes are read
+			got, err = os.Stdin.Read(buf)
+			if got == 0 {
+				if err != nil {
+					break
+				}
+				continue
+			}
+
+			// break if the escape sequence is encountered
+			if buf[0] == escapeSequence {
 				break
 			}
 
-			if got > 0 {
-				if buf[0] == escapeSequence {
-					break
-				}
-				_, err = stream.Send(buf)
+			sent, err = stream.Send(buf)
+			if sent != len(buf) {
 				if err != nil {
-					fmt.Println(err)
 					break
 				}
 			}
+		}
+		if err != nil {
+			fmt.Println(err)
 		}
 		quit = true
 		cond.Broadcast()
