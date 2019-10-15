@@ -101,6 +101,26 @@ func main() {
 			},
 		},
 		{
+			Name: "restart",
+			Action: func(c *cli.Context) error {
+				return box.Restart(c.String("name"), c.Bool("force"), c.BoolT("graceful"))
+			},
+			Flags: []cli.Flag{
+				cli.StringFlag{
+					Name:     "name,n",
+					Required: true,
+				},
+				cli.BoolFlag{
+					Name:     "force,f",
+					Required: false,
+				},
+				cli.BoolTFlag{
+					Name:     "graceful,g",
+					Required: false,
+				},
+			},
+		},
+		{
 			Name: "connect",
 			Action: func(c *cli.Context) error {
 				return box.Connect(c.String("name"), c.String("mode"), c.String("user"))
