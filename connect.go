@@ -181,6 +181,7 @@ func connectConsole(dom *libvirt.Domain) error {
 	defer terminal.Restore(int(os.Stdin.Fd()), oldstate)
 
 	signal.Ignore(syscall.SIGQUIT, syscall.SIGTERM, syscall.SIGINT, syscall.SIGHUP, syscall.SIGPIPE)
+	defer signal.Reset()
 
 	stream, err := conn.NewStream(0)
 	if err != nil {
@@ -261,8 +262,6 @@ func connectConsole(dom *libvirt.Domain) error {
 	for !quit {
 		cond.Wait()
 	}
-
-	signal.Reset()
 
 	return nil
 }
