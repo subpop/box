@@ -2,6 +2,8 @@ package vm
 
 import (
 	"fmt"
+	"os"
+	"path/filepath"
 	"strings"
 
 	"github.com/libvirt/libvirt-go"
@@ -11,6 +13,11 @@ import (
 // domain is destroyed without prompting for confirmation.
 func Destroy(name string, id int, force bool) error {
 	conn, err := libvirt.NewConnect("")
+	if err != nil {
+		return err
+	}
+
+	imagesDir, err := getImagesDir()
 	if err != nil {
 		return err
 	}
@@ -60,6 +67,13 @@ func Destroy(name string, id int, force bool) error {
 			return err
 		}
 	}
+
+	UUID, err := dom.GetUUIDString()
+	if err != nil {
+		return err
+	}
+
+	os.Remove(filepath.Join(imagesDir, UUID+".qcow2"))
 
 	err = dom.Undefine()
 	if err != nil {
