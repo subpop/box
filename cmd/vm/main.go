@@ -61,7 +61,7 @@ func main() {
 		{
 			Name: "destroy",
 			Action: func(c *cli.Context) error {
-				return vm.Destroy(c.String("name"), c.Int("id"), c.Bool("force"))
+				return vm.Destroy(c.String("name"), c.Bool("force"))
 			},
 			Flags: []cli.Flag{
 				cli.StringFlag{
