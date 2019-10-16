@@ -6,7 +6,7 @@ and manage virtual machines through libvirt.
 # Installation #
 
 ```bash
-go get -u github.com/subpop/box
+go get -u github.com/subpop/box/cmd/box
 ```
 
 # Usage #
@@ -39,4 +39,10 @@ Connect to an existing box over SSH:
 
 ```bash
 box connect -m ssh -n awaited-sawfly
+```
+
+Connect to an existing box over console TTY:
+
+```bash
+box connect -m console -n awaited-sawfly
 ```
