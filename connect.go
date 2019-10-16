@@ -1,6 +1,7 @@
 package box
 
 import (
+	"bufio"
 	"fmt"
 	"io"
 	"os"
@@ -195,6 +196,8 @@ func connectConsole(dom *libvirt.Domain) error {
 	defer cond.L.Unlock()
 	var quit bool
 
+	stdin := bufio.NewReader(os.Stdin)
+
 	// read from stream and write to stdout
 	go func() {
 		var err error
@@ -232,30 +235,20 @@ func connectConsole(dom *libvirt.Domain) error {
 	go func() {
 		var err error
 		for !quit {
-			var buf []byte
-			var got, sent int
+			var got byte
 
-			buf = make([]byte, 1024)
-
-			// read from stdin, continuing if no bytes are read
-			got, err = os.Stdin.Read(buf)
-			if got == 0 {
-				if err != nil {
-					break
-				}
-				continue
-			}
-
-			// break if the escape sequence is encountered
-			if buf[0] == escapeSequence {
+			got, err = stdin.ReadByte()
+			if err != nil {
 				break
 			}
 
-			sent, err = stream.Send(buf)
-			if sent != len(buf) {
-				if err != nil {
-					break
-				}
+			if got == escapeSequence {
+				break
+			}
+
+			_, err = stream.Send([]byte{got})
+			if err != nil {
+				break
 			}
 		}
 		if err != nil {
