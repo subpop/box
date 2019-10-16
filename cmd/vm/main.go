@@ -146,7 +146,13 @@ func main() {
 				{
 					Name: "list",
 					Action: func(c *cli.Context) error {
-						return vm.ImageList()
+						return vm.ImageList(c.String("sort"))
+					},
+					Flags: []cli.Flag{
+						cli.StringFlag{
+							Name:  "sort,s",
+							Value: "name",
+						},
 					},
 				},
 				{
