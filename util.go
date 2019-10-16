@@ -1,4 +1,4 @@
-package box
+package vm
 
 import (
 	"os"
@@ -11,7 +11,7 @@ func getDataDir() (string, error) {
 		return "", err
 	}
 
-	dir = filepath.Join(dir, ".local", "share", "box")
+	dir = filepath.Join(dir, ".local", "share", "vm")
 
 	if _, err := os.Stat(dir); os.IsNotExist(err) {
 		if err := os.MkdirAll(dir, 0755); err != nil {

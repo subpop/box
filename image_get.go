@@ -1,4 +1,4 @@
-package box
+package vm
 
 import (
 	"crypto/sha512"

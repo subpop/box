@@ -1,12 +1,12 @@
 # About #
 
-`box` is a command line utility that provides a high-level interface to create
+`vm` is a command line utility that provides a high-level interface to create
 and manage virtual machines through libvirt.
 
 # Installation #
 
 ```bash
-go get -u github.com/subpop/box/cmd/box
+go get -u github.com/subpop/vm/cmd/vm
 ```
 
 # Usage #
@@ -14,35 +14,35 @@ go get -u github.com/subpop/box/cmd/box
 Download a base image:
 
 ```bash
-box image get -n fedora-30
+vm image get -n fedora-30
 ```
 
-Create a box from that image:
+Create a VM from that image:
 
 ```bash
-box create -i fedora-30
+vm create -i fedora-30
 ```
 
-List available boxes:
+List available VMs:
 
 ```bash
-box list
+vm list
 ```
 
-Start a created box:
+Start a created VM:
 
 ```bash
-box up -n awaited-sawfly
+vm up -n awaited-sawfly
 ```
 
-Connect to an existing box over SSH:
+Connect to an existing VM over SSH:
 
 ```bash
-box connect -m ssh -n awaited-sawfly
+vm connect -m ssh -n awaited-sawfly
 ```
 
-Connect to an existing box over console TTY:
+Connect to an existing VM over console TTY:
 
 ```bash
-box connect -m console -n awaited-sawfly
+vm connect -m console -n awaited-sawfly
 ```

@@ -1,4 +1,4 @@
-package box
+package vm
 
 import (
 	"fmt"
@@ -30,7 +30,7 @@ func Up(name string) error {
 			return err
 		}
 	default:
-		return fmt.Errorf("error: cannot start box in state: %v", state)
+		return fmt.Errorf("error: cannot start VM in state: %v", state)
 	}
 
 	return nil

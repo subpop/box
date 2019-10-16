@@ -4,7 +4,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/subpop/box"
+	"github.com/subpop/vm"
 
 	"github.com/urfave/cli"
 )
@@ -14,12 +14,12 @@ func main() {
 	var app *cli.App
 
 	app = cli.NewApp()
-	app.Name = "box"
+	app.Name = "vm"
 	app.Commands = []cli.Command{
 		{
 			Name: "create",
 			Action: func(c *cli.Context) error {
-				return box.Create(c.String("name"), c.String("image"))
+				return vm.Create(c.String("name"), c.String("image"))
 			},
 			Flags: []cli.Flag{
 				cli.StringFlag{
@@ -47,7 +47,7 @@ func main() {
 					inactive = true
 				}
 
-				return box.List(active, inactive)
+				return vm.List(active, inactive)
 			},
 			Flags: []cli.Flag{
 				cli.BoolFlag{
@@ -61,7 +61,7 @@ func main() {
 		{
 			Name: "destroy",
 			Action: func(c *cli.Context) error {
-				return box.Destroy(c.String("name"), c.Int("id"), c.Bool("force"))
+				return vm.Destroy(c.String("name"), c.Int("id"), c.Bool("force"))
 			},
 			Flags: []cli.Flag{
 				cli.StringFlag{
@@ -76,7 +76,7 @@ func main() {
 		{
 			Name: "up",
 			Action: func(c *cli.Context) error {
-				return box.Up(c.String("name"))
+				return vm.Up(c.String("name"))
 			},
 			Flags: []cli.Flag{
 				cli.StringFlag{
@@ -88,7 +88,7 @@ func main() {
 		{
 			Name: "down",
 			Action: func(c *cli.Context) error {
-				return box.Down(c.String("name"), c.Int("id"), c.Bool("force"))
+				return vm.Down(c.String("name"), c.Int("id"), c.Bool("force"))
 			},
 			Flags: []cli.Flag{
 				cli.StringFlag{
@@ -103,7 +103,7 @@ func main() {
 		{
 			Name: "restart",
 			Action: func(c *cli.Context) error {
-				return box.Restart(c.String("name"), c.Bool("force"), c.BoolT("graceful"))
+				return vm.Restart(c.String("name"), c.Bool("force"), c.BoolT("graceful"))
 			},
 			Flags: []cli.Flag{
 				cli.StringFlag{
@@ -123,7 +123,7 @@ func main() {
 		{
 			Name: "connect",
 			Action: func(c *cli.Context) error {
-				return box.Connect(c.String("name"), c.String("mode"), c.String("user"))
+				return vm.Connect(c.String("name"), c.String("mode"), c.String("user"))
 			},
 			Flags: []cli.Flag{
 				cli.StringFlag{
@@ -146,19 +146,19 @@ func main() {
 				{
 					Name: "list",
 					Action: func(c *cli.Context) error {
-						return box.ImageList()
+						return vm.ImageList()
 					},
 				},
 				{
 					Name: "sync",
 					Action: func(c *cli.Context) error {
-						return box.ImageSync()
+						return vm.ImageSync()
 					},
 				},
 				{
 					Name: "info",
 					Action: func(c *cli.Context) error {
-						return box.ImageInfo(c.String("name"), c.String("arch"))
+						return vm.ImageInfo(c.String("name"), c.String("arch"))
 					},
 					Flags: []cli.Flag{
 						cli.StringFlag{
@@ -174,7 +174,7 @@ func main() {
 				{
 					Name: "get",
 					Action: func(c *cli.Context) error {
-						return box.ImageGet(c.String("name"), c.String("arch"))
+						return vm.ImageGet(c.String("name"), c.String("arch"))
 					},
 					Flags: []cli.Flag{
 						cli.StringFlag{
@@ -190,7 +190,7 @@ func main() {
 				{
 					Name: "remove",
 					Action: func(c *cli.Context) error {
-						return box.ImageRemove(c.String("name"), c.Bool("force"))
+						return vm.ImageRemove(c.String("name"), c.Bool("force"))
 					},
 					Flags: []cli.Flag{
 						cli.StringFlag{

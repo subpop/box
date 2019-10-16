@@ -1,4 +1,4 @@
-module github.com/subpop/box
+module github.com/subpop/vm
 
 go 1.12
 
