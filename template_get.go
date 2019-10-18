@@ -9,7 +9,6 @@ import (
 	"net/http"
 	"net/url"
 	"os"
-	"os/exec"
 	"path/filepath"
 	"strconv"
 	"strings"
@@ -160,13 +159,7 @@ func TemplateGet(name, arch string) error {
 
 	switch template.Format {
 	case "raw":
-		qcowFilePath := strings.TrimSuffix(filePath, ".raw") + ".qcow2"
-		cmd := exec.Command("qemu-img", "convert", "-f", "raw", "-O", "qcow2", filePath, qcowFilePath)
-		err := cmd.Run()
-		if err != nil {
-			return err
-		}
-		if err := os.Remove(filePath); err != nil {
+		if err := convertToQcow2(filePath); err != nil {
 			return err
 		}
 	}
