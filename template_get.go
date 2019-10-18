@@ -19,17 +19,17 @@ import (
 	"github.com/ulikunitz/xz"
 )
 
-// ImageGet downloads and prepares a disk image for use as a backing disk image.
-func ImageGet(name, arch string) error {
+// TemplateGet downloads and prepares a disk template for use as a backing disk image.
+func TemplateGet(name, arch string) error {
 	index, err := newIndex()
 	if err != nil {
 		return err
 	}
 
-	var image image
-	for _, i := range index.Images {
-		if i.ININame == name && i.Arch == arch {
-			image = i
+	var template template
+	for _, t := range index.Templates {
+		if t.ININame == name && t.Arch == arch {
+			template = t
 			break
 		}
 	}
@@ -38,7 +38,7 @@ func ImageGet(name, arch string) error {
 	if err != nil {
 		return err
 	}
-	URL.Path += image.File
+	URL.Path += template.File
 
 	resp, err := http.Get(URL.String())
 	if err != nil {
@@ -64,7 +64,7 @@ func ImageGet(name, arch string) error {
 	if err != nil {
 		return err
 	}
-	filePath := filepath.Join(imagesDir, image.File)
+	filePath := filepath.Join(imagesDir, template.File)
 
 	f, err := os.Create(filePath + ".tmp")
 	if err != nil {
@@ -106,9 +106,9 @@ func ImageGet(name, arch string) error {
 		return err
 	}
 	computed := fmt.Sprintf("%x", hash.Sum(nil))
-	checksum, ok := image.Checksum["sha512"]
+	checksum, ok := template.Checksum["sha512"]
 	if !ok {
-		checksum = image.Checksum[""]
+		checksum = template.Checksum[""]
 	}
 	if checksum != computed {
 		return fmt.Errorf("invalid checksum: %v != %v", checksum, computed)
@@ -123,7 +123,7 @@ func ImageGet(name, arch string) error {
 		}
 		defer os.Remove(filePath)
 
-		filePath = strings.TrimSuffix(filePath, ".xz") + "." + image.Format
+		filePath = strings.TrimSuffix(filePath, ".xz") + "." + template.Format
 		tmpFilePath := filePath + ".tmp"
 		xzf, err := os.Create(tmpFilePath)
 		if err != nil {
@@ -136,7 +136,7 @@ func ImageGet(name, arch string) error {
 			return err
 		}
 
-		bar := uiprogress.AddBar(int(image.Size))
+		bar := uiprogress.AddBar(int(template.Size))
 		bar.AppendCompleted()
 
 		bc := &byteCounter{
@@ -158,7 +158,7 @@ func ImageGet(name, arch string) error {
 		}
 	}
 
-	switch image.Format {
+	switch template.Format {
 	case "raw":
 		qcowFilePath := strings.TrimSuffix(filePath, ".raw") + ".qcow2"
 		cmd := exec.Command("qemu-img", "convert", "-f", "raw", "-O", "qcow2", filePath, qcowFilePath)

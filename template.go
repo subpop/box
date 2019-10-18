@@ -13,7 +13,7 @@ import (
 
 const baseURL string = "http://builder.libguestfs.org/"
 
-type image struct {
+type template struct {
 	ININame        string
 	Name           string            `ini:"name"`
 	OSInfo         string            `ini:"osinfo,omitempty"`
@@ -29,7 +29,7 @@ type image struct {
 }
 
 type index struct {
-	Images []image `ini:"*"`
+	Templates []template `ini:"*"`
 }
 
 func newIndex() (i index, err error) {
@@ -57,18 +57,18 @@ func newIndex() (i index, err error) {
 	return
 }
 
-func (i image) String() string {
+func (t template) String() string {
 	var b strings.Builder
 	w := tabwriter.NewWriter(&b, 0, 0, 2, ' ', 0)
-	fmt.Fprintf(w, "NAME\t%v\n", i.Name)
-	fmt.Fprintf(w, "OSINFO\t%v\n", i.OSInfo)
-	fmt.Fprintf(w, "ARCH\t%v\n", i.Arch)
-	fmt.Fprintf(w, "FILE\t%v\n", i.File)
-	fmt.Fprintf(w, "REVISION\t%v\n", i.Revision)
-	fmt.Fprintf(w, "CHECKSUM\t%v\n", i.Checksum)
-	fmt.Fprintf(w, "FORMAT\t%v\n", i.Format)
-	fmt.Fprintf(w, "SIZE\t%v\n", i.Size)
-	fmt.Fprintf(w, "NOTES\n%v\n", i.Notes)
+	fmt.Fprintf(w, "NAME\t%v\n", t.Name)
+	fmt.Fprintf(w, "OSINFO\t%v\n", t.OSInfo)
+	fmt.Fprintf(w, "ARCH\t%v\n", t.Arch)
+	fmt.Fprintf(w, "FILE\t%v\n", t.File)
+	fmt.Fprintf(w, "REVISION\t%v\n", t.Revision)
+	fmt.Fprintf(w, "CHECKSUM\t%v\n", t.Checksum)
+	fmt.Fprintf(w, "FORMAT\t%v\n", t.Format)
+	fmt.Fprintf(w, "SIZE\t%v\n", t.Size)
+	fmt.Fprintf(w, "NOTES\n%v\n", t.Notes)
 	w.Flush()
 	return b.String()
 }

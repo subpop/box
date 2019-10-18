@@ -144,9 +144,29 @@ func main() {
 			Name: "image",
 			Subcommands: []cli.Command{
 				{
+					Name: "remove",
+					Action: func(c *cli.Context) error {
+						return vm.ImageRemove(c.String("name"), c.Bool("force"))
+					},
+					Flags: []cli.Flag{
+						cli.StringFlag{
+							Name:     "n,name",
+							Required: true,
+						},
+						cli.BoolFlag{
+							Name: "force",
+						},
+					},
+				},
+			},
+		},
+		{
+			Name: "template",
+			Subcommands: []cli.Command{
+				{
 					Name: "list",
 					Action: func(c *cli.Context) error {
-						return vm.ImageList(c.String("sort"))
+						return vm.TemplateList(c.String("sort"))
 					},
 					Flags: []cli.Flag{
 						cli.StringFlag{
@@ -158,13 +178,13 @@ func main() {
 				{
 					Name: "sync",
 					Action: func(c *cli.Context) error {
-						return vm.ImageSync()
+						return vm.TemplateSync()
 					},
 				},
 				{
 					Name: "info",
 					Action: func(c *cli.Context) error {
-						return vm.ImageInfo(c.String("name"), c.String("arch"))
+						return vm.TemplateInfo(c.String("name"), c.String("arch"))
 					},
 					Flags: []cli.Flag{
 						cli.StringFlag{
@@ -180,7 +200,7 @@ func main() {
 				{
 					Name: "get",
 					Action: func(c *cli.Context) error {
-						return vm.ImageGet(c.String("name"), c.String("arch"))
+						return vm.TemplateGet(c.String("name"), c.String("arch"))
 					},
 					Flags: []cli.Flag{
 						cli.StringFlag{
