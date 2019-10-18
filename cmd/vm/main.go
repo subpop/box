@@ -144,6 +144,12 @@ func main() {
 			Name: "image",
 			Subcommands: []cli.Command{
 				{
+					Name: "list",
+					Action: func(c *cli.Context) error {
+						return vm.ImageList()
+					},
+				},
+				{
 					Name: "remove",
 					Action: func(c *cli.Context) error {
 						return vm.ImageRemove(c.String("name"), c.Bool("force"))
