@@ -150,6 +150,18 @@ func main() {
 					},
 				},
 				{
+					Name: "get",
+					Action: func(c *cli.Context) error {
+						return vm.ImageGet(c.String("url"))
+					},
+					Flags: []cli.Flag{
+						cli.StringFlag{
+							Name:     "url",
+							Required: true,
+						},
+					},
+				},
+				{
 					Name: "remove",
 					Action: func(c *cli.Context) error {
 						return vm.ImageRemove(c.String("name"), c.Bool("force"))

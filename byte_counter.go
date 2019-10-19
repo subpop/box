@@ -1,34 +1,19 @@
 package vm
 
-import (
-	"fmt"
-	"strings"
-
-	"github.com/dustin/go-humanize"
-	"github.com/gosuri/uiprogress"
-)
-
+// byteCounter is a Writer that invokes a callback each time Write is called.
+// It does not write the byte slice passed to it anywhere, so it must be used
+// with an io.TeeReader in order to actually write data anywhere meaningful.
 type byteCounter struct {
-	bar    *uiprogress.Bar
-	total  uint64
-	prefix string
+	onWrite func(b []byte)
+	onClose func()
 }
 
-func (b *byteCounter) Write(p []byte) (int, error) {
-	n := len(p)
-	b.total += uint64(n)
-	if b.bar != nil {
-		b.bar.Set(b.bar.Current() + n)
-	} else {
-		fmt.Printf("\r%s", strings.Repeat(" ", 35))
-		fmt.Printf("\r%s%s", b.prefix, humanize.Bytes(b.total))
-	}
-
-	return n, nil
+func (b *byteCounter) Write(buf []byte) (int, error) {
+	b.onWrite(buf)
+	return len(buf), nil
 }
 
 func (b *byteCounter) Close() error {
-	fmt.Println()
-
+	b.onClose()
 	return nil
 }
