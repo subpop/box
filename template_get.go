@@ -1,21 +1,11 @@
 package vm
 
 import (
-	"crypto/sha512"
-	"errors"
-	"fmt"
-	"io"
-	"io/ioutil"
 	"net/http"
 	"net/url"
 	"os"
 	"path/filepath"
-	"strconv"
 	"strings"
-
-	"github.com/dustin/go-humanize"
-	"github.com/gosuri/uiprogress"
-	"github.com/ulikunitz/xz"
 )
 
 // TemplateGet downloads and prepares a disk template for use as a backing disk image.
@@ -45,126 +35,37 @@ func TemplateGet(name, arch string) error {
 	}
 	defer resp.Body.Close()
 
-	contentLengthHeader := resp.Header.Get("Content-Length")
-	if contentLengthHeader == "" {
-		return errors.New("missing header: Content-Length")
-	}
-
-	contentLength, err := strconv.ParseInt(contentLengthHeader, 10, 64)
-	if err != nil {
-		return err
-	}
-
-	uiprogress.Start()
-	bar := uiprogress.AddBar(int(contentLength))
-	bar.AppendCompleted()
-
 	imagesDir, err := getImagesDir()
 	if err != nil {
 		return err
 	}
 	filePath := filepath.Join(imagesDir, template.File)
 
-	f, err := os.Create(filePath + ".tmp")
-	if err != nil {
-		return err
-	}
-	defer f.Close()
-
-	bc := &byteCounter{
-		bar: bar,
-	}
-	defer bc.Close()
-	bar.PrependFunc(func(b *uiprogress.Bar) string {
-		return fmt.Sprintf("dl: %s", humanize.Bytes(bc.total))
-	})
-
-	_, err = io.Copy(f, io.TeeReader(resp.Body, bc))
-	if err != nil {
+	if err := download(resp, filePath); err != nil {
 		return err
 	}
 
-	err = os.Rename(filePath+".tmp", filePath)
-	if err != nil {
-		return err
-	}
-
-	r, err := os.Open(filePath)
-	if err != nil {
-		return err
-	}
-	defer r.Close()
-	data, err := ioutil.ReadAll(r)
-	if err != nil {
-		return err
-	}
-
-	hash := sha512.New()
-	_, err = hash.Write(data)
-	if err != nil {
-		return err
-	}
-	computed := fmt.Sprintf("%x", hash.Sum(nil))
 	checksum, ok := template.Checksum["sha512"]
 	if !ok {
 		checksum = template.Checksum[""]
 	}
-	if checksum != computed {
-		return fmt.Errorf("invalid checksum: %v != %v", checksum, computed)
+	if err := verify(filePath, checksum); err != nil {
+		return err
 	}
 
-	contentType := resp.Header.Get("Content-Type")
-	switch contentType {
-	case "application/x-xz":
-		f, err := os.Open(filePath)
-		if err != nil {
-			return err
-		}
-		defer os.Remove(filePath)
-
-		filePath = strings.TrimSuffix(filePath, ".xz") + "." + template.Format
-		tmpFilePath := filePath + ".tmp"
-		xzf, err := os.Create(tmpFilePath)
-		if err != nil {
-			return err
-		}
-		defer xzf.Close()
-
-		xzr, err := xz.NewReader(f)
-		if err != nil {
-			return err
-		}
-
-		bar := uiprogress.AddBar(int(template.Size))
-		bar.AppendCompleted()
-
-		bc := &byteCounter{
-			bar: bar,
-		}
-		defer bc.Close()
-		bar.PrependFunc(func(b *uiprogress.Bar) string {
-			return fmt.Sprintf("xz: %s", humanize.Bytes(bc.total))
-		})
-
-		_, err = io.Copy(xzf, io.TeeReader(xzr, bc))
-		if err != nil {
-			return err
-		}
-
-		err = os.Rename(tmpFilePath, filePath)
-		if err != nil {
-			return err
-		}
+	if err := decompressXZ(filePath); err != nil {
+		return err
 	}
 
-	switch template.Format {
-	case "raw":
-		if err := convertToQcow2(filePath); err != nil {
-			return err
-		}
+	if err := os.Rename(strings.TrimSuffix(filePath, ".xz"), filepath.Join(imagesDir, strings.TrimSuffix(template.File, ".xz")+"."+template.Format)); err != nil {
+		return err
 	}
 
-	uiprogress.Stop()
+	filePath = filepath.Join(imagesDir, strings.TrimSuffix(template.File, ".xz")+"."+template.Format)
+
+	if err := convertToQcow2(filePath); err != nil {
+		return err
+	}
 
 	return nil
 }
