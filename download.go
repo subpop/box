@@ -27,7 +27,7 @@ func download(resp *http.Response, filePath string) error {
 	bc := &byteCounter{
 		onWrite: func(buf []byte) {
 			bytesWritten += uint64(len(buf))
-			fmt.Printf("downloading... \r%s", humanize.Bytes(bytesWritten))
+			fmt.Printf("\rdownloading... %s", humanize.Bytes(bytesWritten))
 		},
 		onClose: func() {
 			fmt.Println()
@@ -142,7 +142,7 @@ func copy(dest io.Writer, src io.Reader) error {
 	bc := &byteCounter{
 		onWrite: func(buf []byte) {
 			bytesWritten += uint64(len(buf))
-			fmt.Printf("decompressing... \r%s", humanize.Bytes(bytesWritten))
+			fmt.Printf("\rdecompressing... %s", humanize.Bytes(bytesWritten))
 		},
 		onClose: func() {
 			fmt.Println()
