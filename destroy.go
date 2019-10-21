@@ -60,6 +60,7 @@ func Destroy(name string, force bool) error {
 	}
 
 	os.Remove(filepath.Join(instancesDir, UUID+".qcow2"))
+	os.RemoveAll(filepath.Join(instancesDir, UUID))
 
 	err = dom.Undefine()
 	if err != nil {

@@ -19,7 +19,7 @@ func main() {
 		{
 			Name: "create",
 			Action: func(c *cli.Context) error {
-				return vm.Create(c.String("name"), c.String("image"))
+				return vm.Create(c.String("name"), c.String("image"), c.StringSlice("disk"))
 			},
 			Flags: []cli.Flag{
 				cli.StringFlag{
@@ -28,6 +28,9 @@ func main() {
 				cli.StringFlag{
 					Name:     "i,image",
 					Required: true,
+				},
+				cli.StringSliceFlag{
+					Name: "disk,d",
 				},
 			},
 		},

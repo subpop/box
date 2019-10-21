@@ -3,6 +3,7 @@ package vm
 import (
 	"encoding/xml"
 	"fmt"
+	"io"
 	"math/rand"
 	"os"
 	"os/exec"
@@ -20,7 +21,7 @@ func init() {
 
 // Create defines a new domain using name and creating a disk image backed by
 // image.
-func Create(name, image string) error {
+func Create(name, image string, disks []string) error {
 	if name == "" {
 		name = petname.Generate(2, "-")
 	}
@@ -59,6 +60,69 @@ func Create(name, image string) error {
 		return err
 	}
 	domain.Devices.Disks[0].Source.File = overlayImagePath
+
+	instanceDataDir := filepath.Join(instancesDir, domain.UUID)
+	if _, err := os.Stat(instanceDataDir); os.IsNotExist(err) {
+		if err := os.MkdirAll(instanceDataDir, 0755); err != nil {
+			return err
+		}
+	}
+
+	for _, d := range disks {
+		src, err := os.Open(d)
+		if err != nil {
+			return err
+		}
+		defer src.Close()
+
+		dest, err := os.Create(filepath.Join(instanceDataDir, filepath.Base(d)))
+		if err != nil {
+			return err
+		}
+		defer dest.Close()
+
+		if _, err := io.Copy(dest, src); err != nil {
+			return err
+		}
+
+		var device string
+		switch filepath.Ext(d) {
+		case ".iso":
+			device = "cdrom"
+		case ".img":
+			device = "floppy"
+		default:
+			device = "disk"
+		}
+
+		var driver Driver
+		switch filepath.Ext(d) {
+		case ".qcow2":
+			driver = Driver{
+				Name: "qemu",
+				Type: "qcow2",
+			}
+		default:
+			driver = Driver{
+				Name: "qemu",
+				Type: "raw",
+			}
+		}
+
+		disk := Disk{
+			Type:   "file",
+			Device: device,
+			Driver: driver,
+			Source: Source{
+				File: dest.Name(),
+			},
+			Target: Target{
+				Dev: "hdb",
+				Bus: "ide",
+			},
+		}
+		domain.Devices.Disks = append(domain.Devices.Disks, disk)
+	}
 
 	data, err := xml.Marshal(domain)
 	if err != nil {
