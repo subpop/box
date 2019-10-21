@@ -30,6 +30,11 @@ func Create(name, image string) error {
 		return err
 	}
 
+	instancesDir, err := getInstancesDir()
+	if err != nil {
+		return err
+	}
+
 	baseImagePath := filepath.Join(imagesDir, image+".qcow2")
 	if _, err := os.Stat(baseImagePath); os.IsNotExist(err) {
 		return err
@@ -42,7 +47,7 @@ func Create(name, image string) error {
 	domain.UUID = uuid.New().String()
 	domain.Name = name
 
-	overlayImagePath := filepath.Join(imagesDir, domain.UUID+".qcow2")
+	overlayImagePath := filepath.Join(instancesDir, domain.UUID+".qcow2")
 	cmd := exec.Command("qemu-img",
 		"create",
 		"-f",

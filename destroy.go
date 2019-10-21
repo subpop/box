@@ -17,7 +17,7 @@ func Destroy(name string, force bool) error {
 		return err
 	}
 
-	imagesDir, err := getImagesDir()
+	instancesDir, err := getInstancesDir()
 	if err != nil {
 		return err
 	}
@@ -59,7 +59,7 @@ func Destroy(name string, force bool) error {
 		return err
 	}
 
-	os.Remove(filepath.Join(imagesDir, UUID+".qcow2"))
+	os.Remove(filepath.Join(instancesDir, UUID+".qcow2"))
 
 	err = dom.Undefine()
 	if err != nil {

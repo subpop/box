@@ -38,3 +38,20 @@ func getImagesDir() (string, error) {
 
 	return dir, nil
 }
+
+func getInstancesDir() (string, error) {
+	dir, err := getDataDir()
+	if err != nil {
+		return "", err
+	}
+
+	dir = filepath.Join(dir, "instances")
+
+	if _, err := os.Stat(dir); os.IsNotExist(err) {
+		if err := os.MkdirAll(dir, 0755); err != nil {
+			return "", err
+		}
+	}
+
+	return dir, nil
+}
