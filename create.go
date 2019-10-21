@@ -81,5 +81,7 @@ func Create(name, image string) error {
 		return err
 	}
 
+	fmt.Println("Created " + domain.Name)
+
 	return nil
 }
