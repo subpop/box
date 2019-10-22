@@ -1,10 +1,11 @@
 package vm
 
 import (
-	"net/http"
+	"crypto/sha512"
+	"fmt"
+	"io/ioutil"
 	"net/url"
 	"os"
-	"path/filepath"
 	"strings"
 )
 
@@ -29,19 +30,8 @@ func TemplateGet(name, arch string) error {
 	}
 	URL.Path += template.File
 
-	resp, err := http.Get(URL.String())
+	filePath, err := download(URL.String())
 	if err != nil {
-		return err
-	}
-	defer resp.Body.Close()
-
-	imagesDir, err := getImagesDir()
-	if err != nil {
-		return err
-	}
-	filePath := filepath.Join(imagesDir, template.File)
-
-	if err := download(resp, filePath); err != nil {
 		return err
 	}
 
@@ -53,18 +43,41 @@ func TemplateGet(name, arch string) error {
 		return err
 	}
 
-	if err := decompressXZ(filePath); err != nil {
+	destFilePath := strings.TrimSuffix(filePath, ".xz")
+	destFilePath += "." + template.Format + ".xz"
+
+	err = os.Rename(filePath, destFilePath)
+	if err != nil {
 		return err
 	}
 
-	if err := os.Rename(strings.TrimSuffix(filePath, ".xz"), filepath.Join(imagesDir, strings.TrimSuffix(template.File, ".xz")+"."+template.Format)); err != nil {
+	if err := inspect(destFilePath); err != nil {
 		return err
 	}
 
-	filePath = filepath.Join(imagesDir, strings.TrimSuffix(template.File, ".xz")+"."+template.Format)
+	return nil
+}
 
-	if err := convertToQcow2(filePath); err != nil {
+func verify(filePath, checksum string) error {
+	f, err := os.Open(filePath)
+	if err != nil {
 		return err
+	}
+	defer f.Close()
+
+	data, err := ioutil.ReadAll(f)
+	if err != nil {
+		return err
+	}
+
+	hash := sha512.New()
+	_, err = hash.Write(data)
+	if err != nil {
+		return err
+	}
+	computed := fmt.Sprintf("%x", hash.Sum(nil))
+	if checksum != computed {
+		return fmt.Errorf("invalid checksum: %v != %v", checksum, computed)
 	}
 
 	return nil
