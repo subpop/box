@@ -38,6 +38,8 @@ func Connect(name string, mode string, user string) error {
 		return connectSSH(dom, user)
 	case "console":
 		return connectConsole(dom)
+	case "serial":
+		return connectSerial(dom)
 	default:
 		return fmt.Errorf("error: unsupported connection mode: %v", mode)
 	}
@@ -159,14 +161,22 @@ func connectSSH(dom *libvirt.Domain, user string) error {
 	return nil
 }
 
+func connectSerial(dom *libvirt.Domain) error {
+	return connectCharDev(dom, "serial0")
+}
+
 func connectConsole(dom *libvirt.Domain) error {
+	return connectCharDev(dom, "console1")
+}
+
+func connectCharDev(dom *libvirt.Domain, devName string) error {
 	var err error
 
 	name, err := dom.GetName()
 	if err != nil {
 		return err
 	}
-	fmt.Println("Connected to " + name)
+	fmt.Println("Connected to " + name + "(" + devName + ")")
 	fmt.Println("Escape character is ^]")
 
 	conn, err := dom.DomainGetConnect()
@@ -188,7 +198,7 @@ func connectConsole(dom *libvirt.Domain) error {
 		return err
 	}
 
-	if err := dom.OpenConsole("", stream, libvirt.DOMAIN_CONSOLE_SAFE); err != nil {
+	if err := dom.OpenConsole(devName, stream, libvirt.DOMAIN_CONSOLE_SAFE); err != nil {
 		return err
 	}
 
