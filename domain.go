@@ -4,8 +4,13 @@ import (
 	"encoding/xml"
 )
 
-type Console struct {
+type consoleTarget struct {
 	Type string `xml:"type,attr"`
+}
+
+type Console struct {
+	Type   string        `xml:"type,attr"`
+	Target consoleTarget `xml:"target"`
 }
 
 type Model struct {
@@ -176,6 +181,11 @@ const domainXML string = `
       <source bridge="virbr0"/>
       <model type="virtio"/>
     </interface>
-    <console type="pty"/>
+	<console type="pty">
+	  <target type="serial"/>
+	</console>
+	<console type="pty">
+	  <target type="virtio"/>
+	</console>
   </devices>
 </domain>`
