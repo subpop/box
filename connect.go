@@ -176,7 +176,7 @@ func connectCharDev(dom *libvirt.Domain, devName string) error {
 	if err != nil {
 		return err
 	}
-	fmt.Println("Connected to " + name + "(" + devName + ")")
+	fmt.Println("Connected to " + name + " (" + devName + ")")
 	fmt.Println("Escape character is ^]")
 
 	conn, err := dom.DomainGetConnect()
