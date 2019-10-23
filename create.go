@@ -41,7 +41,7 @@ func Create(name, image string, disks []string) error {
 		return err
 	}
 
-	var domain Domain
+	var domain domain
 	if err := xml.Unmarshal([]byte(domainXML), &domain); err != nil {
 		return err
 	}
@@ -95,28 +95,28 @@ func Create(name, image string, disks []string) error {
 			device = "disk"
 		}
 
-		var driver Driver
+		var drv driver
 		switch filepath.Ext(d) {
 		case ".qcow2":
-			driver = Driver{
+			drv = driver{
 				Name: "qemu",
 				Type: "qcow2",
 			}
 		default:
-			driver = Driver{
+			drv = driver{
 				Name: "qemu",
 				Type: "raw",
 			}
 		}
 
-		disk := Disk{
+		disk := disk{
 			Type:   "file",
 			Device: device,
-			Driver: driver,
-			Source: Source{
+			Driver: drv,
+			Source: source{
 				File: dest.Name(),
 			},
-			Target: Target{
+			Target: target{
 				Dev: "hdb",
 				Bus: "ide",
 			},

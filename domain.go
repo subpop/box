@@ -8,131 +8,131 @@ type consoleTarget struct {
 	Type string `xml:"type,attr"`
 }
 
-type Console struct {
+type console struct {
 	Type   string        `xml:"type,attr"`
 	Target consoleTarget `xml:"target"`
 }
 
-type Model struct {
+type model struct {
 	Type string `xml:"type,attr"`
 }
 
-type Mac struct {
+type mac struct {
 	Address string `xml:"address,attr"`
 }
 
-type InterfaceSource struct {
+type interfaceSource struct {
 	Network string `xml:"network,attr,omitempty"`
 	Bridge  string `xml:"bridge,attr,omitempty"`
 }
 
-type Interface struct {
+type netInterface struct {
 	Type   string          `xml:"type,attr"`
-	Source InterfaceSource `xml:"source"`
-	MAC    *Mac            `xml:"mac,omitempty"`
-	Model  Model           `xml:"model"`
+	Source interfaceSource `xml:"source"`
+	MAC    *mac            `xml:"mac,omitempty"`
+	Model  model           `xml:"model"`
 }
 
-type Master struct {
+type master struct {
 	StartPort string `xml:"startport,attr,omitempty"`
 }
 
-type Controller struct {
+type controller struct {
 	Type   string  `xml:"type,attr"`
 	Index  string  `xml:"index,attr"`
 	Model  string  `xml:"model,attr"`
-	Master *Master `xml:"master,omitempty"`
+	Master *master `xml:"master,omitempty"`
 }
 
-type Target struct {
+type target struct {
 	Dev string `xml:"dev,attr"`
 	Bus string `xml:"bus,attr"`
 }
 
-type Source struct {
+type source struct {
 	File string `xml:"file,attr"`
 }
 
-type Driver struct {
+type driver struct {
 	Name string `xml:"name,attr"`
 	Type string `xml:"type,attr"`
 }
 
-type Disk struct {
+type disk struct {
 	Type     string `xml:"type,attr"`
 	Device   string `xml:"device,attr"`
-	Driver   Driver `xml:"driver"`
-	Source   Source `xml:"source"`
-	Target   Target `xml:"target"`
+	Driver   driver `xml:"driver"`
+	Source   source `xml:"source"`
+	Target   target `xml:"target"`
 	ReadOnly string `xml:"readonly,omitempty"`
 }
 
-type Devices struct {
-	Emulator    string       `xml:"emulator"`
-	Disks       []Disk       `xml:"disk"`
-	Controllers []Controller `xml:"controller"`
-	Interfaces  []Interface  `xml:"interface"`
-	Consoles    []Console    `xml:"console"`
+type devices struct {
+	Emulator    string         `xml:"emulator"`
+	Disks       []disk         `xml:"disk"`
+	Controllers []controller   `xml:"controller"`
+	Interfaces  []netInterface `xml:"interface"`
+	Consoles    []console      `xml:"console"`
 }
 
-type SuspendTo struct {
+type suspendTo struct {
 	Enabled string `xml:"enabled,attr"`
 }
 
-type Pm struct {
-	SuspendToMem  SuspendTo `xml:"suspend-to-mem"`
-	SuspendToDisk SuspendTo `xml:"suspend-to-disk"`
+type pm struct {
+	SuspendToMem  suspendTo `xml:"suspend-to-mem"`
+	SuspendToDisk suspendTo `xml:"suspend-to-disk"`
 }
 
-type Timer struct {
+type timer struct {
 	Name       string `xml:"name,attr"`
 	TickPolicy string `xml:"tickpolicy,attr,omitempty"`
 	Present    string `xml:"present,attr,omitempty"`
 }
 
-type Clock struct {
+type clock struct {
 	Offset string  `xml:"offset,attr"`
-	Timers []Timer `xml:"timer"`
+	Timers []timer `xml:"timer"`
 }
 
-type Cpu struct {
+type cpu struct {
 	Mode string `xml:"mode,attr"`
 }
 
-type Features struct {
+type features struct {
 	Acpi string `xml:"acpi"`
 	Apic string `xml:"apic"`
 }
 
-type Boot struct {
+type boot struct {
 	Dev string `xml:"dev,attr"`
 }
 
-type Type struct {
+type osType struct {
 	Arch    string `xml:"arch,attr"`
 	Machine string `xml:"machine,attr"`
 	Value   string `xml:",chardata"`
 }
 
-type Os struct {
-	Type Type `xml:"type"`
-	Boot Boot `xml:"boot"`
+type operatingSystem struct {
+	Type osType `xml:"type"`
+	Boot boot   `xml:"boot"`
 }
 
-type Domain struct {
-	XMLName       xml.Name `xml:"domain"`
-	Type          string   `xml:"type,attr"`
-	Name          string   `xml:"name"`
-	UUID          string   `xml:"uuid"`
-	Memory        int      `xml:"memory"`
-	CurrentMemory int      `xml:"currentMemory"`
-	VCPU          int      `xml:"vcpu"`
-	OS            Os       `xml:"os"`
-	Features      Features `xml:"features"`
-	CPU           Cpu      `xml:"cpu"`
-	Clock         Clock    `xml:"clock"`
-	PM            Pm       `xml:"pm"`
-	Devices       Devices  `xml:"devices"`
+type domain struct {
+	XMLName       xml.Name        `xml:"domain"`
+	Type          string          `xml:"type,attr"`
+	Name          string          `xml:"name"`
+	UUID          string          `xml:"uuid"`
+	Memory        int             `xml:"memory"`
+	CurrentMemory int             `xml:"currentMemory"`
+	VCPU          int             `xml:"vcpu"`
+	OS            operatingSystem `xml:"os"`
+	Features      features        `xml:"features"`
+	CPU           cpu             `xml:"cpu"`
+	Clock         clock           `xml:"clock"`
+	PM            pm              `xml:"pm"`
+	Devices       devices         `xml:"devices"`
 }
 
 const domainXML string = `
