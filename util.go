@@ -1,6 +1,7 @@
 package vm
 
 import (
+	"archive/tar"
 	"compress/gzip"
 	"fmt"
 	"io"
@@ -72,6 +73,14 @@ func inspect(filePath string) error {
 		return decompress(filePath)
 	case ".raw", ".img":
 		return convert(filePath)
+	case ".tar":
+		return unarchive(filePath)
+	case ".box":
+		newFilePath := strings.TrimSuffix(filePath, ".box") + ".tar.gz"
+		if err := os.Rename(filePath, newFilePath); err != nil {
+			return err
+		}
+		return inspect(newFilePath)
 	case ".qcow2":
 		return nil
 	}
@@ -180,6 +189,52 @@ func convert(filePath string) error {
 	err = cmd.Run()
 	if err != nil {
 		return err
+	}
+
+	if err := os.Remove(filePath); err != nil {
+		return err
+	}
+
+	return inspect(destFilePath)
+}
+
+func unarchive(filePath string) error {
+	var err error
+
+	r, err := os.Open(filePath)
+	if err != nil {
+		return err
+	}
+	defer r.Close()
+
+	destFilePath := strings.TrimSuffix(filePath, ".tar") + ".qcow2"
+
+	tr := tar.NewReader(r)
+	for {
+		hdr, err := tr.Next()
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			return err
+		}
+		if hdr.Name == "box.img" {
+			w, err := os.Create(destFilePath)
+			if err != nil {
+				return err
+			}
+			defer w.Close()
+
+			var bytesWritten uint64
+			err = copy(w, tr, func(buf []byte) {
+				bytesWritten += uint64(len(buf))
+				fmt.Printf("\r%s", strings.Repeat(" ", 40))
+				fmt.Printf("\rextracting... %s", humanize.Bytes(bytesWritten))
+			})
+			if err != nil {
+				return err
+			}
+		}
 	}
 
 	if err := os.Remove(filePath); err != nil {
