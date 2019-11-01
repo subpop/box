@@ -14,35 +14,41 @@ go get -u github.com/subpop/vm/cmd/vm
 Download a base image:
 
 ```bash
-vm image get -n fedora-30
+vm image get https://dl.fedoraproject.org/pub/fedora/linux/releases/31/Cloud/x86_64/images/Fedora-Cloud-Base-31-1.9.x86_64.qcow2
 ```
 
-Create a VM from that image:
+Download and convert a Vagrant ".box":
 
 ```bash
-vm create -i fedora-30
+vm image get https://dl.fedoraproject.org/pub/fedora/linux/releases/31/Cloud/x86_64/images/Fedora-Cloud-Base-Vagrant-31-1.9.x86_64.vagrant-libvirt.box
 ```
 
-List available VMs:
+Create a domain backed by that image:
+
+```bash
+vm create Fedora-Cloud-Base-31-1.9.x86_64 --name my-f31
+```
+
+List active domains:
 
 ```bash
 vm list
 ```
 
-Start a created VM:
+Start a created domain:
 
 ```bash
-vm up -n awaited-sawfly
+vm up my-f31
 ```
 
-Connect to an existing VM over SSH:
+Connect to an existing domain over SSH:
 
 ```bash
-vm connect -m ssh -n awaited-sawfly
+vm connect -m ssh -u vagrant my-f31
 ```
 
-Connect to an existing VM over console TTY:
+Connect to an existing domain over VirtIO PTY:
 
 ```bash
-vm connect -m console -n awaited-sawfly
+vm connect -m console my-f31
 ```
