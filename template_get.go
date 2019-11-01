@@ -9,8 +9,9 @@ import (
 	"strings"
 )
 
-// TemplateGet downloads and prepares a disk template for use as a backing disk image.
-func TemplateGet(name, arch string) error {
+// TemplateGet downloads and prepares a disk template for use as a backing disk
+// image. If quiet is true, no progress is printed to stdout.
+func TemplateGet(name, arch string, quiet bool) error {
 	index, err := newIndex()
 	if err != nil {
 		return err
@@ -30,7 +31,7 @@ func TemplateGet(name, arch string) error {
 	}
 	URL.Path += template.File
 
-	filePath, err := download(URL.String())
+	filePath, err := download(URL.String(), quiet)
 	if err != nil {
 		return err
 	}
@@ -51,7 +52,7 @@ func TemplateGet(name, arch string) error {
 		return err
 	}
 
-	if err := inspect(destFilePath); err != nil {
+	if _, err := inspect(destFilePath, quiet); err != nil {
 		return err
 	}
 

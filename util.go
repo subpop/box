@@ -68,31 +68,31 @@ func getInstancesDir() (string, error) {
 }
 
 // inspect begins a state-machine of sorts that will convert the file at filePath
-// to a qcow2 image.
-func inspect(filePath string) error {
+// to a qcow2 image. If quiet is true, no progress is printed to stdout.
+func inspect(filePath string, quiet bool) (string, error) {
 	switch filepath.Ext(filePath) {
 	case ".gz", ".xz":
-		return decompress(filePath)
+		return decompress(filePath, quiet)
 	case ".raw", ".img":
-		return convert(filePath)
+		return convert(filePath, quiet)
 	case ".tar":
-		return unarchive(filePath)
+		return unarchive(filePath, quiet)
 	case ".box":
 		newFilePath := strings.TrimSuffix(filePath, ".box") + ".tar.gz"
 		if err := os.Rename(filePath, newFilePath); err != nil {
-			return err
+			return "", err
 		}
-		return inspect(newFilePath)
+		return inspect(newFilePath, quiet)
 	case ".qcow2":
-		return nil
+		return filePath, nil
 	}
 
-	return fmt.Errorf("unsupported file type: %v", filePath)
+	return "", fmt.Errorf("unsupported file type: %v", filePath)
 }
 
 // transfer copies filePath into the images directory and returns the path to the
-// new image.
-func transfer(filePath string) (string, error) {
+// new image. If quiet is true, no progress is printed to stdout.
+func transfer(filePath string, quiet bool) (string, error) {
 	var err error
 
 	imagesDir, err := getImagesDir()
@@ -115,9 +115,11 @@ func transfer(filePath string) (string, error) {
 
 	var bytesWritten uint64
 	err = copy(w, r, func(buf []byte) {
-		bytesWritten += uint64(len(buf))
-		fmt.Printf("\r%s", strings.Repeat(" ", 40))
-		fmt.Printf("\rcopying... %s", humanize.Bytes(bytesWritten))
+		if !quiet {
+			bytesWritten += uint64(len(buf))
+			fmt.Printf("\r%s", strings.Repeat(" ", 40))
+			fmt.Printf("\rcopying... %s", humanize.Bytes(bytesWritten))
+		}
 	})
 	if err != nil {
 		return "", err
@@ -132,8 +134,9 @@ func transfer(filePath string) (string, error) {
 }
 
 // download streams the body of rawurl into a file in the images directory and
-// returns a path to the new image.
-func download(rawurl string) (string, error) {
+// returns a path to the new image. If quiet is true, no progress is printed to
+// stdout.
+func download(rawurl string, quiet bool) (string, error) {
 	URL, err := url.Parse(rawurl)
 	if err != nil {
 		return "", err
@@ -159,9 +162,11 @@ func download(rawurl string) (string, error) {
 
 	var bytesWritten uint64
 	err = copy(w, resp.Body, func(buf []byte) {
-		bytesWritten += uint64(len(buf))
-		fmt.Printf("\r%s", strings.Repeat(" ", 40))
-		fmt.Printf("\rdownloading... %s", humanize.Bytes(bytesWritten))
+		if !quiet {
+			bytesWritten += uint64(len(buf))
+			fmt.Printf("\r%s", strings.Repeat(" ", 40))
+			fmt.Printf("\rdownloading... %s", humanize.Bytes(bytesWritten))
+		}
 	})
 	if err != nil {
 		return "", err
@@ -176,13 +181,14 @@ func download(rawurl string) (string, error) {
 }
 
 // decompress inspects the file extension of filePath and decompresses the file
-// at filePath. Only gz and xz compression formats are supported.
-func decompress(filePath string) error {
+// at filePath. Only gz and xz compression formats are supported. If quiet is
+// true, no progress is printed to stdout.
+func decompress(filePath string, quiet bool) (string, error) {
 	var err error
 
 	r, err := os.Open(filePath)
 	if err != nil {
-		return err
+		return "", err
 	}
 	defer r.Close()
 
@@ -194,39 +200,42 @@ func decompress(filePath string) error {
 		g, err = xz.NewReader(r)
 	}
 	if err != nil {
-		return err
+		return "", err
 	}
 
 	destFilePath := strings.TrimSuffix(filePath, filepath.Ext(filePath))
 	w, err := os.Create(destFilePath + ".tmp")
 	if err != nil {
-		return err
+		return "", err
 	}
 	defer w.Close()
 
 	var bytesWritten uint64
 	err = copy(w, g, func(buf []byte) {
-		bytesWritten += uint64(len(buf))
-		fmt.Printf("\r%s", strings.Repeat(" ", 40))
-		fmt.Printf("\rdecompressing... %s", humanize.Bytes(bytesWritten))
+		if !quiet {
+			bytesWritten += uint64(len(buf))
+			fmt.Printf("\r%s", strings.Repeat(" ", 40))
+			fmt.Printf("\rdecompressing... %s", humanize.Bytes(bytesWritten))
+		}
 	})
 	if err != nil {
-		return err
+		return "", err
 	}
 
 	if err := os.Rename(destFilePath+".tmp", destFilePath); err != nil {
-		return err
+		return "", err
 	}
 
 	if err := os.Remove(filePath); err != nil {
-		return err
+		return "", err
 	}
 
-	return inspect(destFilePath)
+	return inspect(destFilePath, quiet)
 }
 
-// convert calls qemu-img to convert the image at filePath to a qcow2 image.
-func convert(filePath string) error {
+// convert calls qemu-img to convert the image at filePath to a qcow2 image. If
+// quiet is true, no progress is printed to stdout.
+func convert(filePath string, quiet bool) (string, error) {
 	var err error
 
 	destFilePath := strings.TrimSuffix(filePath, filepath.Ext(filePath)) + ".qcow2"
@@ -236,23 +245,24 @@ func convert(filePath string) error {
 		filePath, destFilePath)
 	err = cmd.Run()
 	if err != nil {
-		return err
+		return "", err
 	}
 
 	if err := os.Remove(filePath); err != nil {
-		return err
+		return "", err
 	}
 
-	return inspect(destFilePath)
+	return inspect(destFilePath, quiet)
 }
 
-// unarchive extracts a file named "box.img" from the tar archive at filePath.
-func unarchive(filePath string) error {
+// unarchive extracts a file named "box.img" from the tar archive at filePath. If
+// quiet is true, no progress is printed to stdout.
+func unarchive(filePath string, quiet bool) (string, error) {
 	var err error
 
 	r, err := os.Open(filePath)
 	if err != nil {
-		return err
+		return "", err
 	}
 	defer r.Close()
 
@@ -265,32 +275,34 @@ func unarchive(filePath string) error {
 			break
 		}
 		if err != nil {
-			return err
+			return "", err
 		}
 		if hdr.Name == "box.img" {
 			w, err := os.Create(destFilePath)
 			if err != nil {
-				return err
+				return "", err
 			}
 			defer w.Close()
 
 			var bytesWritten uint64
 			err = copy(w, tr, func(buf []byte) {
-				bytesWritten += uint64(len(buf))
-				fmt.Printf("\r%s", strings.Repeat(" ", 40))
-				fmt.Printf("\rextracting... %s", humanize.Bytes(bytesWritten))
+				if !quiet {
+					bytesWritten += uint64(len(buf))
+					fmt.Printf("\r%s", strings.Repeat(" ", 40))
+					fmt.Printf("\rextracting... %s", humanize.Bytes(bytesWritten))
+				}
 			})
 			if err != nil {
-				return err
+				return "", err
 			}
 		}
 	}
 
 	if err := os.Remove(filePath); err != nil {
-		return err
+		return "", err
 	}
 
-	return inspect(destFilePath)
+	return inspect(destFilePath, quiet)
 }
 
 // copy transfers bytes from src to dest, piping through a TeeReader, calling

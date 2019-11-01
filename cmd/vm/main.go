@@ -185,12 +185,16 @@ func main() {
 						if path == "" {
 							return vm.ErrURLOrPathRequired
 						}
-						return vm.ImageGet(path)
+						return vm.ImageGet(path, c.Bool("quiet"))
 					},
 					Flags: []cli.Flag{
 						cli.StringFlag{
 							Name:  "name,n",
 							Usage: "Rename backing disk image to `NAME`",
+						},
+						cli.BoolFlag{
+							Name:  "quiet,q",
+							Usage: "No progress output",
 						},
 					},
 				},
@@ -267,13 +271,17 @@ func main() {
 						if name == "" {
 							return vm.ErrTemplateNameRequired
 						}
-						return vm.TemplateGet(name, c.String("arch"))
+						return vm.TemplateGet(name, c.String("arch"), c.Bool("quiet"))
 					},
 					Flags: []cli.Flag{
 						cli.StringFlag{
 							Name:  "arch,a",
 							Usage: "Specify alternative architecture",
 							Value: "x86_64",
+						},
+						cli.BoolFlag{
+							Name:  "quiet,q",
+							Usage: "No progress output",
 						},
 					},
 				},
