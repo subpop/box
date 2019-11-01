@@ -38,7 +38,10 @@ func main() {
 			},
 		},
 		{
-			Name: "list",
+			Name:        "list",
+			Usage:       "List defined domains",
+			UsageText:   "vm list [OPTION]...",
+			Description: "The list command prints a table of defined domains. By default, only active (running) domains are listed. Specify --all to print inactive domains as well.",
 			Action: func(c *cli.Context) error {
 				active := true
 				inactive := false
@@ -57,10 +60,12 @@ func main() {
 			},
 			Flags: []cli.Flag{
 				cli.BoolFlag{
-					Name: "all",
+					Name:  "all",
+					Usage: "Include inactive domains",
 				},
 				cli.BoolFlag{
-					Name: "inactive",
+					Name:  "inactive",
+					Usage: "List only inactive domains",
 				},
 			},
 		},
