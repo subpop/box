@@ -22,8 +22,8 @@ func main() {
 			UsageText:   "vm create [command options] [image name]",
 			Description: "The create command defines new domains using the given image as a backing disk. If no --name option is specified, the domain is given a random name.",
 			Action: func(c *cli.Context) error {
-				name := c.Args().First()
-				return vm.Create(name, c.String("image"), c.StringSlice("disk"))
+				image := c.Args().First()
+				return vm.Create(c.String("name"), image, c.StringSlice("disk"))
 			},
 			Flags: []cli.Flag{
 				cli.StringFlag{
