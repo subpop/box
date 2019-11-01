@@ -88,6 +88,45 @@ func inspect(filePath string) error {
 	return fmt.Errorf("unsupported file type: %v", filePath)
 }
 
+func transfer(filePath string) (string, error) {
+	var err error
+
+	imagesDir, err := getImagesDir()
+	if err != nil {
+		return "", err
+	}
+
+	r, err := os.Open(filePath)
+	if err != nil {
+		return "", err
+	}
+	defer r.Close()
+
+	destFilePath := filepath.Join(imagesDir, filepath.Base(filePath))
+	w, err := os.Create(destFilePath + ".tmp")
+	if err != nil {
+		return "", err
+	}
+	defer w.Close()
+
+	var bytesWritten uint64
+	err = copy(w, r, func(buf []byte) {
+		bytesWritten += uint64(len(buf))
+		fmt.Printf("\r%s", strings.Repeat(" ", 40))
+		fmt.Printf("\rcopying... %s", humanize.Bytes(bytesWritten))
+	})
+	if err != nil {
+		return "", err
+	}
+
+	err = os.Rename(destFilePath+".tmp", destFilePath)
+	if err != nil {
+		return "", err
+	}
+
+	return destFilePath, nil
+}
+
 func download(rawurl string) (string, error) {
 	URL, err := url.Parse(rawurl)
 	if err != nil {
