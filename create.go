@@ -4,6 +4,7 @@ import (
 	"encoding/xml"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"math/rand"
 	"os"
 	"os/exec"
@@ -21,7 +22,8 @@ func init() {
 
 // Create defines a new domain using name and creating a disk image backed by
 // image. If connect is true, a console is attached to the newly created domain.
-func Create(name, image string, disks []string, connect bool) error {
+// If transient is true, the domain is destroy upon shutdown.
+func Create(name, image string, disks []string, connect, transient bool) error {
 	if name == "" {
 		name = petname.Generate(2, "-")
 	}
@@ -34,6 +36,12 @@ func Create(name, image string, disks []string, connect bool) error {
 	instancesDir, err := getInstancesDir()
 	if err != nil {
 		return err
+	}
+	if transient {
+		instancesDir, err = ioutil.TempDir("", "vm-")
+		if err != nil {
+			return err
+		}
 	}
 
 	baseImagePath := filepath.Join(imagesDir, image+".qcow2")
@@ -135,15 +143,22 @@ func Create(name, image string, disks []string, connect bool) error {
 	}
 	defer conn.Close()
 
-	dom, err := conn.DomainDefineXML(string(data))
-	if err != nil {
-		return err
+	var dom *libvirt.Domain
+	if transient {
+		dom, err = conn.DomainCreateXML(string(data), libvirt.DOMAIN_START_AUTODESTROY)
+		if err != nil {
+			return err
+		}
+	} else {
+		dom, err = conn.DomainDefineXML(string(data))
+		if err != nil {
+			return err
+		}
+		if err := dom.Create(); err != nil {
+			return err
+		}
 	}
 	defer dom.Free()
-
-	if err := dom.Create(); err != nil {
-		return err
-	}
 
 	fmt.Println("Created " + domain.Name)
 
