@@ -24,6 +24,11 @@ var ErrImageNameRequired = MissingPositionalArgErr{
 	name: "image name",
 }
 
+// ErrTemplateNameRequired represents a missing template name argument.
+var ErrTemplateNameRequired = MissingPositionalArgErr{
+	name: "template name",
+}
+
 // ErrURLOrPathRequired represents a missing URL or path argument.
 var ErrURLOrPathRequired = MissingPositionalArgErr{
 	name: "URL or path",

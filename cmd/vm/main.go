@@ -1,7 +1,7 @@
 package main
 
 import (
-	"log"
+	"fmt"
 	"os"
 
 	"github.com/subpop/vm"
@@ -19,7 +19,7 @@ func main() {
 		{
 			Name:        "create",
 			Usage:       "Creates a new domain from the specified image",
-			UsageText:   "vm create [OPTION]... [IMAGE]",
+			UsageText:   "vm create [command options] [image name]",
 			Description: "The create command defines new domains using the given image as a backing disk. If no --name option is specified, the domain is given a random name.",
 			Action: func(c *cli.Context) error {
 				name := c.Args().First()
@@ -40,7 +40,7 @@ func main() {
 		{
 			Name:        "list",
 			Usage:       "List defined domains",
-			UsageText:   "vm list [OPTION]...",
+			UsageText:   "vm list [command options]",
 			Description: "The list command prints a table of defined domains. By default, only active (running) domains are listed. Specify --all to print inactive domains as well.",
 			Action: func(c *cli.Context) error {
 				active := true
@@ -72,7 +72,7 @@ func main() {
 		{
 			Name:        "destroy",
 			Usage:       "Destroy a domain",
-			UsageText:   "vm destroy [OPTION]... [NAME]",
+			UsageText:   "vm destroy [command options] [domain name]",
 			Description: "The destroy command destroys the specified domain, prompting the user for confirmation (unless --force is passed).",
 			Action: func(c *cli.Context) error {
 				return vm.Destroy(c.String("name"), c.Bool("force"))
@@ -85,74 +85,89 @@ func main() {
 			},
 		},
 		{
-			Name: "up",
+			Name:      "up",
+			Usage:     "Start a domain",
+			UsageText: "vm up [command options] [domain name]",
 			Action: func(c *cli.Context) error {
-				return vm.Up(c.String("name"))
-			},
-			Flags: []cli.Flag{
-				cli.StringFlag{
-					Name:     "name,n",
-					Required: true,
-				},
+				name := c.Args().First()
+				if name == "" {
+					return vm.ErrDomainNameRequired
+				}
+				return vm.Up(name)
 			},
 		},
 		{
-			Name: "down",
+			Name:      "down",
+			Usage:     "Stop a domain",
+			UsageText: "vm down [command options] [domain name]",
 			Action: func(c *cli.Context) error {
-				return vm.Down(c.String("name"), c.Int("id"), c.Bool("force"))
+				name := c.Args().First()
+				if name == "" {
+					return vm.ErrDomainNameRequired
+				}
+				return vm.Down(name, c.Bool("force"), c.Bool("graceful"))
 			},
 			Flags: []cli.Flag{
-				cli.StringFlag{
-					Name:     "name,n",
-					Required: true,
+				cli.BoolFlag{
+					Name:  "force,f",
+					Usage: "Immediately stop the domain, without prompting",
 				},
 				cli.BoolFlag{
-					Name: "force",
+					Name:  "graceful,g",
+					Usage: "Power off the domain gracefully",
 				},
 			},
 		},
 		{
-			Name: "restart",
+			Name:      "restart",
+			Usage:     "Restart a domain",
+			UsageText: "vm restart [command options] [domain name]",
 			Action: func(c *cli.Context) error {
-				return vm.Restart(c.String("name"), c.Bool("force"), c.BoolT("graceful"))
+				name := c.Args().First()
+				if name == "" {
+					return vm.ErrDomainNameRequired
+				}
+				return vm.Restart(name, c.Bool("force"), c.Bool("graceful"))
 			},
 			Flags: []cli.Flag{
-				cli.StringFlag{
-					Name:     "name,n",
-					Required: true,
+				cli.BoolFlag{
+					Name:  "force,f",
+					Usage: "Immediately restart the domain, without prompting",
 				},
 				cli.BoolFlag{
-					Name:     "force,f",
-					Required: false,
-				},
-				cli.BoolTFlag{
-					Name:     "graceful,g",
-					Required: false,
+					Name:  "graceful,g",
+					Usage: "Restart the domain gracefully",
 				},
 			},
 		},
 		{
-			Name: "connect",
+			Name:        "connect",
+			Usage:       "Connect to a running domain",
+			UsageText:   "vm connect [command options] [domain name]",
+			Description: `Connect to a running domain. The --mode option changes the virtual device that is connected to. 'serial' connects to the domain's serial PTY. 'console' attempts to connect to a VirtIO PTY on the domain (if the domain supports VirtIO character devices). 'ssh' establishes an SSH session and attempts password authentication.`,
 			Action: func(c *cli.Context) error {
-				return vm.Connect(c.String("name"), c.String("mode"), c.String("user"))
+				name := c.Args().First()
+				if name == "" {
+					return vm.ErrDomainNameRequired
+				}
+				return vm.Connect(name, c.String("mode"), c.String("user"))
 			},
 			Flags: []cli.Flag{
-				cli.StringFlag{
-					Name:     "name,n",
-					Required: true,
-				},
 				cli.StringFlag{
 					Name:  "mode,m",
-					Value: "ssh",
+					Usage: "Connection mode: serial, console, or ssh",
+					Value: "serial",
 				},
 				cli.StringFlag{
 					Name:  "user,u",
+					Usage: "User to connect as over SSH",
 					Value: "root",
 				},
 			},
 		},
 		{
-			Name: "image",
+			Name:  "image",
+			Usage: "Manage backing disk images",
 			Subcommands: []cli.Command{
 				{
 					Name:  "list",
@@ -164,7 +179,7 @@ func main() {
 				{
 					Name:      "get",
 					Usage:     "Retrieve a new backing disk image",
-					UsageText: "vm image get [URL or PATH]",
+					UsageText: "vm image get [command options] [URL or path]",
 					Action: func(c *cli.Context) error {
 						path := c.Args().First()
 						if path == "" {
@@ -182,7 +197,7 @@ func main() {
 				{
 					Name:      "remove",
 					Usage:     "Remove a backing disk image",
-					UsageText: "vm image remove [OPTIONS]... [NAME]",
+					UsageText: "vm image remove [command options] [image name]",
 					Action: func(c *cli.Context) error {
 						name := c.Args().First()
 						if name == "" {
@@ -200,70 +215,65 @@ func main() {
 			},
 		},
 		{
-			Name: "template",
+			Name:  "template",
+			Usage: "Manage backing disk templates from libguestfs",
 			Subcommands: []cli.Command{
 				{
-					Name: "list",
+					Name:  "list",
+					Usage: "List templates available for import",
 					Action: func(c *cli.Context) error {
 						return vm.TemplateList(c.String("sort"))
 					},
 					Flags: []cli.Flag{
 						cli.StringFlag{
 							Name:  "sort,s",
+							Usage: "Sort list by `VALUE`",
 							Value: "name",
 						},
 					},
 				},
 				{
-					Name: "sync",
+					Name:  "sync",
+					Usage: "Refresh available templates from build service",
 					Action: func(c *cli.Context) error {
 						return vm.TemplateSync()
 					},
 				},
 				{
-					Name: "info",
+					Name:      "info",
+					Usage:     "Print details about a template",
+					UsageText: "vm template info [command options] [template name]",
 					Action: func(c *cli.Context) error {
-						return vm.TemplateInfo(c.String("name"), c.String("arch"))
+						name := c.Args().First()
+						if name == "" {
+							return vm.ErrTemplateNameRequired
+						}
+						return vm.TemplateInfo(name, c.String("arch"))
 					},
 					Flags: []cli.Flag{
-						cli.StringFlag{
-							Name:     "name,n",
-							Required: true,
-						},
 						cli.StringFlag{
 							Name:  "arch,a",
+							Usage: "Specify alternate architecture",
 							Value: "x86_64",
 						},
 					},
 				},
 				{
-					Name: "get",
+					Name:      "get",
+					Usage:     "Retrieve and prepare a template from build service",
+					UsageText: "vm template get [command options] [template name]",
 					Action: func(c *cli.Context) error {
-						return vm.TemplateGet(c.String("name"), c.String("arch"))
+						name := c.Args().First()
+						if name == "" {
+							return vm.ErrTemplateNameRequired
+						}
+						return vm.TemplateGet(name, c.String("arch"))
 					},
 					Flags: []cli.Flag{
 						cli.StringFlag{
-							Name:     "n,name",
-							Required: true,
-						},
-						cli.StringFlag{
-							Name:  "a,arch",
+							Name:  "arch,a",
+							Usage: "Specify alternative architecture",
 							Value: "x86_64",
-						},
-					},
-				},
-				{
-					Name: "remove",
-					Action: func(c *cli.Context) error {
-						return vm.ImageRemove(c.String("name"), c.Bool("force"))
-					},
-					Flags: []cli.Flag{
-						cli.StringFlag{
-							Name:     "n,name",
-							Required: true,
-						},
-						cli.BoolFlag{
-							Name: "force",
 						},
 					},
 				},
@@ -273,6 +283,7 @@ func main() {
 
 	err = app.Run(os.Args)
 	if err != nil {
-		log.Fatal(err)
+		fmt.Fprintf(os.Stderr, "%v", err)
+		os.Exit(1)
 	}
 }
