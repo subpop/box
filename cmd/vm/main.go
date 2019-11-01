@@ -27,9 +27,8 @@ func main() {
 			},
 			Flags: []cli.Flag{
 				cli.StringFlag{
-					Name:     "name,n",
-					Usage:    "Assign `NAME` to the domain",
-					Required: true,
+					Name:  "name,n",
+					Usage: "Assign `NAME` to the domain",
 				},
 				cli.StringSliceFlag{
 					Name:  "disk,d",
