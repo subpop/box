@@ -20,8 +20,8 @@ func init() {
 }
 
 // Create defines a new domain using name and creating a disk image backed by
-// image.
-func Create(name, image string, disks []string) error {
+// image. If connect is true, a console is attached to the newly created domain.
+func Create(name, image string, disks []string, connect bool) error {
 	if name == "" {
 		name = petname.Generate(2, "-")
 	}
@@ -146,6 +146,10 @@ func Create(name, image string, disks []string) error {
 	}
 
 	fmt.Println("Created " + domain.Name)
+
+	if connect {
+		return connectSerial(dom)
+	}
 
 	return nil
 }
