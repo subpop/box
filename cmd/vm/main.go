@@ -70,17 +70,17 @@ func main() {
 			},
 		},
 		{
-			Name: "destroy",
+			Name:        "destroy",
+			Usage:       "Destroy a domain",
+			UsageText:   "vm destroy [OPTION]... [NAME]",
+			Description: "The destroy command destroys the specified domain, prompting the user for confirmation (unless --force is passed).",
 			Action: func(c *cli.Context) error {
 				return vm.Destroy(c.String("name"), c.Bool("force"))
 			},
 			Flags: []cli.Flag{
-				cli.StringFlag{
-					Name:     "name,n",
-					Required: true,
-				},
 				cli.BoolFlag{
-					Name: "force,f",
+					Name:  "force,f",
+					Usage: "Immediately destroy the domain, without prompting",
 				},
 			},
 		},
