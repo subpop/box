@@ -74,7 +74,11 @@ func main() {
 			UsageText:   "vm destroy [command options] [domain name]",
 			Description: "The destroy command destroys the specified domain, prompting the user for confirmation (unless --force is passed).",
 			Action: func(c *cli.Context) error {
-				return vm.Destroy(c.String("name"), c.Bool("force"))
+				name := c.Args().First()
+				if name == "" {
+					return vm.ErrDomainNameRequired
+				}
+				return vm.Destroy(name, c.Bool("force"))
 			},
 			Flags: []cli.Flag{
 				cli.BoolFlag{
