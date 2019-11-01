@@ -67,6 +67,8 @@ func getInstancesDir() (string, error) {
 	return dir, nil
 }
 
+// inspect begins a state-machine of sorts that will convert the file at filePath
+// to a qcow2 image.
 func inspect(filePath string) error {
 	switch filepath.Ext(filePath) {
 	case ".gz", ".xz":
@@ -88,6 +90,8 @@ func inspect(filePath string) error {
 	return fmt.Errorf("unsupported file type: %v", filePath)
 }
 
+// transfer copies filePath into the images directory and returns the path to the
+// new image.
 func transfer(filePath string) (string, error) {
 	var err error
 
@@ -127,6 +131,8 @@ func transfer(filePath string) (string, error) {
 	return destFilePath, nil
 }
 
+// download streams the body of rawurl into a file in the images directory and
+// returns a path to the new image.
 func download(rawurl string) (string, error) {
 	URL, err := url.Parse(rawurl)
 	if err != nil {
@@ -169,6 +175,8 @@ func download(rawurl string) (string, error) {
 	return destFilePath, nil
 }
 
+// decompress inspects the file extension of filePath and decompresses the file
+// at filePath. Only gz and xz compression formats are supported.
 func decompress(filePath string) error {
 	var err error
 
@@ -217,6 +225,7 @@ func decompress(filePath string) error {
 	return inspect(destFilePath)
 }
 
+// convert calls qemu-img to convert the image at filePath to a qcow2 image.
 func convert(filePath string) error {
 	var err error
 
@@ -237,6 +246,7 @@ func convert(filePath string) error {
 	return inspect(destFilePath)
 }
 
+// unarchive extracts a file named "box.img" from the tar archive at filePath.
 func unarchive(filePath string) error {
 	var err error
 
@@ -283,6 +293,8 @@ func unarchive(filePath string) error {
 	return inspect(destFilePath)
 }
 
+// copy transfers bytes from src to dest, piping through a TeeReader, calling
+// writeFunc on each read from src.
 func copy(dest io.Writer, src io.Reader, writeFunc func(buf []byte)) error {
 	w := printWriter{
 		print: writeFunc,
