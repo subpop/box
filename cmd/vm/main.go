@@ -185,11 +185,11 @@ func main() {
 						if path == "" {
 							return vm.ErrURLOrPathRequired
 						}
-						return vm.ImageGet(path, c.Bool("quiet"))
+						return vm.ImageGet(path, c.String("rename"), c.Bool("quiet"))
 					},
 					Flags: []cli.Flag{
 						cli.StringFlag{
-							Name:  "name,n",
+							Name:  "rename,r",
 							Usage: "Rename backing disk image to `NAME`",
 						},
 						cli.BoolFlag{
