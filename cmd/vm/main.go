@@ -155,35 +155,45 @@ func main() {
 			Name: "image",
 			Subcommands: []cli.Command{
 				{
-					Name: "list",
+					Name:  "list",
+					Usage: "List available backing disk images",
 					Action: func(c *cli.Context) error {
 						return vm.ImageList()
 					},
 				},
 				{
-					Name: "get",
+					Name:      "get",
+					Usage:     "Retrieve a new backing disk image",
+					UsageText: "vm image get [URL or PATH]",
 					Action: func(c *cli.Context) error {
-						return vm.ImageGet(c.String("url"))
+						path := c.Args().First()
+						if path == "" {
+							return vm.ErrURLOrPathRequired
+						}
+						return vm.ImageGet(path)
 					},
 					Flags: []cli.Flag{
 						cli.StringFlag{
-							Name:     "url",
-							Required: true,
+							Name:  "name,n",
+							Usage: "Rename backing disk image to `NAME`",
 						},
 					},
 				},
 				{
-					Name: "remove",
+					Name:      "remove",
+					Usage:     "Remove a backing disk image",
+					UsageText: "vm image remove [OPTIONS]... [NAME]",
 					Action: func(c *cli.Context) error {
-						return vm.ImageRemove(c.String("name"), c.Bool("force"))
+						name := c.Args().First()
+						if name == "" {
+							return vm.ErrImageNameRequired
+						}
+						return vm.ImageRemove(name, c.Bool("force"))
 					},
 					Flags: []cli.Flag{
-						cli.StringFlag{
-							Name:     "n,name",
-							Required: true,
-						},
 						cli.BoolFlag{
-							Name: "force",
+							Name:  "force,f",
+							Usage: "Force removal of a backing disk image without prompting",
 						},
 					},
 				},
