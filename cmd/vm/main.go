@@ -17,20 +17,23 @@ func main() {
 	app.Name = "vm"
 	app.Commands = []cli.Command{
 		{
-			Name: "create",
+			Name:        "create",
+			Usage:       "Creates a new domain from the specified image",
+			UsageText:   "vm create [OPTION]... [IMAGE]",
+			Description: "The create command defines new domains using the given image as a backing disk. If no --name option is specified, the domain is given a random name.",
 			Action: func(c *cli.Context) error {
-				return vm.Create(c.String("name"), c.String("image"), c.StringSlice("disk"))
+				name := c.Args().First()
+				return vm.Create(name, c.String("image"), c.StringSlice("disk"))
 			},
 			Flags: []cli.Flag{
 				cli.StringFlag{
-					Name: "n,name",
-				},
-				cli.StringFlag{
-					Name:     "i,image",
+					Name:     "name,n",
+					Usage:    "Assign `NAME` to the domain",
 					Required: true,
 				},
 				cli.StringSliceFlag{
-					Name: "disk,d",
+					Name:  "disk,d",
+					Usage: "Attach `FILE` to the domain as a secondary disk",
 				},
 			},
 		},
