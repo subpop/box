@@ -189,3 +189,18 @@ const domainXML string = `
 	</console>
   </devices>
 </domain>`
+
+type domainSnapshot struct {
+	XMLName      xml.Name `xml:"domainsnapshot"`
+	Name         string   `xml:"name"`
+	Description  string   `xml:"description"`
+	CreationTime string   `xml:"creationTime"`
+	State        string   `xml:"state"`
+}
+
+const domainSnapshotXML string = `
+<domainsnapshot>
+  <name/>
+  <description/>
+  <disks/>
+</domainsnapshot>`
