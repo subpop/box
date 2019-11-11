@@ -298,6 +298,59 @@ func main() {
 				},
 			},
 		},
+		{
+			Name:  "snapshot",
+			Usage: "Manage domain snapshots",
+			Subcommands: []cli.Command{
+				{
+					Name:      "list",
+					Usage:     "List snapshots for a domain",
+					UsageText: "vm snapshot list [command options] [domain name]",
+					Action: func(c *cli.Context) error {
+						name := c.Args().First()
+						if name == "" {
+							return vm.ErrDomainNameRequired
+						}
+						return vm.SnapshotList(name)
+					},
+				},
+				{
+					Name:  "create",
+					Usage: "Take a new snapshot for a domain",
+					Action: func(c *cli.Context) error {
+						domain := c.Args().First()
+						if domain == "" {
+							return vm.ErrDomainNameRequired
+						}
+						return vm.SnapshotCreate(domain, c.String("name"))
+					},
+					Flags: []cli.Flag{
+						cli.StringFlag{
+							Name:  "name,n",
+							Usage: "Create a snapshot with `NAME`",
+						},
+					},
+				},
+				{
+					Name:  "remove",
+					Usage: "Remove a snapshot for a domain",
+					Action: func(c *cli.Context) error {
+						domain := c.Args().First()
+						if domain == "" {
+							return vm.ErrDomainNameRequired
+						}
+						return vm.SnapshotRemove(domain, c.String("snapshot"))
+					},
+					Flags: []cli.Flag{
+						cli.StringFlag{
+							Name:     "snapshot,s",
+							Usage:    "Remove snapshot named `NAME`",
+							Required: true,
+						},
+					},
+				},
+			},
+		},
 	}
 
 	err = app.Run(os.Args)
