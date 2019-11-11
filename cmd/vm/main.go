@@ -169,7 +169,7 @@ func main() {
 				if name == "" {
 					return vm.ErrDomainNameRequired
 				}
-				return vm.Connect(name, c.String("mode"), c.String("user"))
+				return vm.Connect(name, c.String("mode"), c.String("user"), c.String("identity"))
 			},
 			Flags: []cli.Flag{
 				cli.StringFlag{
@@ -180,7 +180,10 @@ func main() {
 				cli.StringFlag{
 					Name:  "user,u",
 					Usage: "User to connect as over SSH",
-					Value: "root",
+				},
+				cli.StringFlag{
+					Name:  "identity,i",
+					Usage: "Attempt SSH authentication using `IDENTITY`",
 				},
 			},
 		},

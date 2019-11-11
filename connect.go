@@ -4,8 +4,10 @@ import (
 	"bufio"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"os"
 	"os/signal"
+	"path/filepath"
 	"sync"
 	"syscall"
 
@@ -18,7 +20,7 @@ const escapeSequence = byte(']') ^ 0x40
 
 // Connect opens a connection to a domain by name. The mode argument determines
 // the connection mode: either "ssh" or "console".
-func Connect(name string, mode string, user string) error {
+func Connect(name string, mode string, user, identity string) error {
 	var err error
 
 	conn, err := libvirt.NewConnect("")
@@ -35,7 +37,7 @@ func Connect(name string, mode string, user string) error {
 
 	switch mode {
 	case "ssh":
-		return connectSSH(dom, user)
+		return connectSSH(dom, user, identity)
 	case "console":
 		return connectConsole(dom)
 	case "serial":
@@ -45,11 +47,26 @@ func Connect(name string, mode string, user string) error {
 	}
 }
 
-func connectSSH(dom *libvirt.Domain, user string) error {
+func connectSSH(dom *libvirt.Domain, user, identity string) error {
+	if user == "" {
+		user = os.Getenv("USER")
+	}
+	if identity == "" {
+		homeDir, err := os.UserHomeDir()
+		if err != nil {
+			return err
+		}
+		identity = filepath.Join(homeDir, ".ssh", "id_rsa")
+	}
+	key, err := ioutil.ReadFile(identity)
+	signer, err := ssh.ParsePrivateKey(key)
+	if err != nil {
+		return err
+	}
 	config := &ssh.ClientConfig{
 		User: user,
 		Auth: []ssh.AuthMethod{
-			// TODO: Add PublicKeyAuthentication
+			ssh.PublicKeys(signer),
 			ssh.RetryableAuthMethod(ssh.PasswordCallback(func() (secret string, err error) {
 				fmt.Print("Password: ")
 				data, err := terminal.ReadPassword(int(os.Stdin.Fd()))
@@ -62,7 +79,7 @@ func connectSSH(dom *libvirt.Domain, user string) error {
 		HostKeyCallback: ssh.InsecureIgnoreHostKey(),
 	}
 
-	interfaces, err := dom.ListAllInterfaceAddresses(libvirt.DOMAIN_INTERFACE_ADDRESSES_SRC_ARP | libvirt.DOMAIN_INTERFACE_ADDRESSES_SRC_LEASE)
+	interfaces, err := dom.ListAllInterfaceAddresses(libvirt.DOMAIN_INTERFACE_ADDRESSES_SRC_ARP)
 	if err != nil {
 		return err
 	}
