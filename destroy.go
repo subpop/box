@@ -62,7 +62,7 @@ func Destroy(name string, force bool) error {
 	os.Remove(filepath.Join(instancesDir, UUID+".qcow2"))
 	os.RemoveAll(filepath.Join(instancesDir, UUID))
 
-	err = dom.Undefine()
+	err = dom.UndefineFlags(libvirt.DOMAIN_UNDEFINE_SNAPSHOTS_METADATA)
 	if err != nil {
 		return err
 	}
