@@ -345,8 +345,9 @@ func main() {
 					},
 				},
 				{
-					Name:  "create",
-					Usage: "Take a new snapshot for a domain",
+					Name:      "create",
+					Usage:     "Take a new snapshot for a domain",
+					UsageText: "vm snapshot create [command options] [domain name]",
 					Action: func(c *cli.Context) error {
 						domain := c.Args().First()
 						if domain == "" {
@@ -362,8 +363,9 @@ func main() {
 					},
 				},
 				{
-					Name:  "remove",
-					Usage: "Remove a snapshot for a domain",
+					Name:      "remove",
+					Usage:     "Remove a snapshot for a domain",
+					UsageText: "vm snapshot remove [command options] [domain name]",
 					Action: func(c *cli.Context) error {
 						domain := c.Args().First()
 						if domain == "" {
@@ -380,8 +382,9 @@ func main() {
 					},
 				},
 				{
-					Name:  "revert",
-					Usage: "Revert a domain to snapshot",
+					Name:      "revert",
+					Usage:     "Revert a domain to snapshot",
+					UsageText: "vm snapshot revert [command options] [domain name]",
 					Action: func(c *cli.Context) error {
 						domain := c.Args().First()
 						if domain == "" {
