@@ -22,8 +22,15 @@ func init() {
 
 // CreateOptions store various options for modifying the domain creation behavior.
 type CreateOptions struct {
+	// Automatically connect to the domain's first serial port after creation.
 	ConnectAfterCreate bool
-	IsTransient        bool
+
+	// Remove the create domain after it is shutdown.
+	IsTransient bool
+
+	// Create a snapshot immediately after creating the domain, before it is
+	// started.
+	CreateInitialSnapshot bool
 }
 
 // Create defines a new domain using name and creating a disk image backed by
@@ -159,6 +166,12 @@ func Create(name, image string, disks []string, options CreateOptions) error {
 		dom, err = conn.DomainDefineXML(string(data))
 		if err != nil {
 			return err
+		}
+		if options.CreateInitialSnapshot {
+			err = SnapshotCreate(name, "")
+			if err != nil {
+				return err
+			}
 		}
 		if err := dom.Create(); err != nil {
 			return err

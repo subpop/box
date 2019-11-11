@@ -24,8 +24,9 @@ func main() {
 			Action: func(c *cli.Context) error {
 				image := c.Args().First()
 				opts := vm.CreateOptions{
-					ConnectAfterCreate: !c.Bool("detach"),
-					IsTransient:        c.Bool("transient"),
+					ConnectAfterCreate:    !c.Bool("detach"),
+					IsTransient:           c.Bool("transient"),
+					CreateInitialSnapshot: !c.Bool("no-snapshot"),
 				}
 				return vm.Create(c.String("name"), image, c.StringSlice("disk"), opts)
 			},
@@ -45,6 +46,10 @@ func main() {
 				cli.BoolFlag{
 					Name:  "transient,t",
 					Usage: "Create a non-persistent domain",
+				},
+				cli.BoolFlag{
+					Name:  "no-snapshot",
+					Usage: "Disable taking an initial snapshot upon creation",
 				},
 			},
 		},
