@@ -120,7 +120,7 @@ type operatingSystem struct {
 }
 
 type domain struct {
-	XMLName       xml.Name        `xml:"domain"`
+	XMLName       xml.Name        `xml:"domain" json:"-"`
 	Type          string          `xml:"type,attr"`
 	Name          string          `xml:"name"`
 	UUID          string          `xml:"uuid"`

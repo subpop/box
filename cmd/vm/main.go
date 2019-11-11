@@ -185,6 +185,26 @@ func main() {
 			},
 		},
 		{
+			Name:        "inspect",
+			Usage:       "Show details about a domain",
+			UsageText:   "vm inspect [command options] [domain name]",
+			Description: "Show details about a domain. The default output format is XML. Pass the --format option with 'json' as the argument to output in JSON.",
+			Action: func(c *cli.Context) error {
+				name := c.Args().First()
+				if name == "" {
+					return vm.ErrDomainNameRequired
+				}
+				return vm.Inspect(name, c.String("format"))
+			},
+			Flags: []cli.Flag{
+				cli.StringFlag{
+					Name:  "format,f",
+					Usage: "Specify output format",
+					Value: "xml",
+				},
+			},
+		},
+		{
 			Name:  "image",
 			Usage: "Manage backing disk images",
 			Subcommands: []cli.Command{
