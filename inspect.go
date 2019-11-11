@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"encoding/xml"
 	"fmt"
+	"strings"
 
 	"github.com/libvirt/libvirt-go"
 )
@@ -44,8 +45,10 @@ func Inspect(name, outputformat string) error {
 		if err != nil {
 			return err
 		}
+	default:
+		output = []byte(d.String())
 	}
-	fmt.Println(string(output))
+	fmt.Println(strings.TrimSpace(string(output)))
 
 	return nil
 }

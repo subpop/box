@@ -2,10 +2,16 @@ package vm
 
 import (
 	"encoding/xml"
+	"fmt"
+	"strings"
+	"text/tabwriter"
+
+	"github.com/dustin/go-humanize"
 )
 
 type consoleTarget struct {
-	Type string `xml:"type,attr"`
+	Type  string `xml:"type,attr"`
+	Alias string `xml:"alias"`
 }
 
 type console struct {
@@ -124,15 +130,29 @@ type domain struct {
 	Type          string          `xml:"type,attr"`
 	Name          string          `xml:"name"`
 	UUID          string          `xml:"uuid"`
-	Memory        int             `xml:"memory"`
-	CurrentMemory int             `xml:"currentMemory"`
-	VCPU          int             `xml:"vcpu"`
+	Memory        uint            `xml:"memory"`
+	CurrentMemory uint            `xml:"currentMemory"`
+	VCPU          uint            `xml:"vcpu"`
 	OS            operatingSystem `xml:"os"`
 	Features      features        `xml:"features"`
 	CPU           cpu             `xml:"cpu"`
 	Clock         clock           `xml:"clock"`
 	PM            pm              `xml:"pm"`
 	Devices       devices         `xml:"devices"`
+}
+
+func (d domain) String() string {
+	var b strings.Builder
+	w := tabwriter.NewWriter(&b, 0, 0, 2, ' ', 0)
+	fmt.Fprintf(w, "NAME\t%v\n", d.Name)
+	fmt.Fprintf(w, "ARCH\t%v\n", d.OS.Type.Arch)
+	fmt.Fprintf(w, "VCPU\t%v\n", d.VCPU)
+	fmt.Fprintf(w, "MEMORY\t%v\n", humanize.Bytes(uint64(d.Memory)))
+	for i, disk := range d.Devices.Disks {
+		fmt.Fprintf(w, "DISK%v\t%v\n", i, disk.Source.File)
+	}
+	w.Flush()
+	return b.String()
 }
 
 const domainXML string = `
