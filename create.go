@@ -20,10 +20,16 @@ func init() {
 	rand.Seed(time.Now().UTC().UnixNano())
 }
 
+// CreateOptions store various options for modifying the domain creation behavior.
+type CreateOptions struct {
+	ConnectAfterCreate bool
+	IsTransient        bool
+}
+
 // Create defines a new domain using name and creating a disk image backed by
 // image. If connect is true, a console is attached to the newly created domain.
 // If transient is true, the domain is destroy upon shutdown.
-func Create(name, image string, disks []string, connect, transient bool) error {
+func Create(name, image string, disks []string, options CreateOptions) error {
 	if name == "" {
 		name = petname.Generate(2, "-")
 	}
@@ -37,7 +43,7 @@ func Create(name, image string, disks []string, connect, transient bool) error {
 	if err != nil {
 		return err
 	}
-	if transient {
+	if options.IsTransient {
 		instancesDir, err = ioutil.TempDir("", "vm-")
 		if err != nil {
 			return err
@@ -144,7 +150,7 @@ func Create(name, image string, disks []string, connect, transient bool) error {
 	defer conn.Close()
 
 	var dom *libvirt.Domain
-	if transient {
+	if options.IsTransient {
 		dom, err = conn.DomainCreateXML(string(data), libvirt.DOMAIN_START_AUTODESTROY)
 		if err != nil {
 			return err
@@ -162,7 +168,7 @@ func Create(name, image string, disks []string, connect, transient bool) error {
 
 	fmt.Println("Created " + domain.Name)
 
-	if connect {
+	if options.ConnectAfterCreate {
 		return connectSerial(dom)
 	}
 
