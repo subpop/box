@@ -379,6 +379,24 @@ func main() {
 						},
 					},
 				},
+				{
+					Name:  "revert",
+					Usage: "Revert a domain to snapshot",
+					Action: func(c *cli.Context) error {
+						domain := c.Args().First()
+						if domain == "" {
+							return vm.ErrDomainNameRequired
+						}
+						return vm.SnapshotRevert(domain, c.String("snapshot"))
+					},
+					Flags: []cli.Flag{
+						cli.StringFlag{
+							Name:     "snapshot,s",
+							Usage:    "Revert to `SNAPSHOT`",
+							Required: true,
+						},
+					},
+				},
 			},
 		},
 	}
