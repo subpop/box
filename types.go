@@ -9,6 +9,21 @@ import (
 	"github.com/dustin/go-humanize"
 )
 
+type videoAcceleration struct {
+	Accel3d string `xml:"accel3d,attr"`
+}
+
+type videoModel struct {
+	Type         string            `xml:"type,attr,omitempty"`
+	VRAM         string            `xml:"vram,attr,omitempty"`
+	Heads        string            `xml:"heads,attr,omitempty"`
+	Acceleration videoAcceleration `xml:"acceleration,omitempty"`
+}
+
+type video struct {
+	Model videoModel `xml:"model,omitempty"`
+}
+
 type consoleTarget struct {
 	Type  string `xml:"type,attr"`
 	Alias string `xml:"alias"`
@@ -19,7 +34,7 @@ type console struct {
 	Target consoleTarget `xml:"target"`
 }
 
-type model struct {
+type netModel struct {
 	Type string `xml:"type,attr"`
 }
 
@@ -36,7 +51,7 @@ type netInterface struct {
 	Type   string          `xml:"type,attr"`
 	Source interfaceSource `xml:"source"`
 	MAC    *mac            `xml:"mac,omitempty"`
-	Model  model           `xml:"model"`
+	Model  netModel        `xml:"model"`
 }
 
 type master struct {
@@ -79,6 +94,7 @@ type devices struct {
 	Controllers []controller   `xml:"controller"`
 	Interfaces  []netInterface `xml:"interface"`
 	Consoles    []console      `xml:"console"`
+	Videos      []video        `xml:"video"`
 }
 
 type suspendTo struct {
@@ -207,6 +223,7 @@ const domainXML string = `
 	<console type="pty">
 	  <target type="virtio"/>
 	</console>
+	<video/>
   </devices>
 </domain>`
 
