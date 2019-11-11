@@ -168,7 +168,7 @@ func Create(name, image string, disks []string, options CreateOptions) error {
 			return err
 		}
 		if options.CreateInitialSnapshot {
-			err = SnapshotCreate(name, "")
+			err = SnapshotCreate(name, "Initial state")
 			if err != nil {
 				return err
 			}
