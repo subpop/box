@@ -33,18 +33,37 @@ func List(active, inactive bool) error {
 	}
 
 	w := tabwriter.NewWriter(os.Stdout, 0, 0, 2, ' ', 0)
-	fmt.Fprintln(w, "ID\tNAME\t")
+	fmt.Fprintln(w, "ID\tNAME\tSTATE\t")
 	for _, domain := range domains {
 		defer domain.Free()
 		name, err := domain.GetName()
 		if err != nil {
 			return err
 		}
+		state, _, err := domain.GetState()
+		var stateDescription string
+		switch state {
+		case libvirt.DOMAIN_RUNNING:
+			stateDescription = "running"
+		case libvirt.DOMAIN_BLOCKED:
+			stateDescription = "blocked"
+		case libvirt.DOMAIN_PAUSED:
+			stateDescription = "paused"
+		case libvirt.DOMAIN_SHUTDOWN:
+			stateDescription = "shutting down"
+		case libvirt.DOMAIN_SHUTOFF:
+			stateDescription = "shutdown"
+		case libvirt.DOMAIN_CRASHED:
+			stateDescription = "crashed"
+		case libvirt.DOMAIN_PMSUSPENDED:
+			stateDescription = "suspended"
+		default:
+			stateDescription = "nostate"
+		}
+		if err != nil {
+			return err
+		}
 		id := func() string {
-			state, _, err := domain.GetState()
-			if err != nil {
-				return "-"
-			}
 			if state == libvirt.DOMAIN_RUNNING {
 				id, err := domain.GetID()
 				if err != nil {
@@ -54,7 +73,7 @@ func List(active, inactive bool) error {
 			}
 			return "-"
 		}()
-		fmt.Fprintf(w, "%v\t%v\t\n", id, name)
+		fmt.Fprintf(w, "%v\t%v\t%v\t\n", id, name, stateDescription)
 	}
 	w.Flush()
 
