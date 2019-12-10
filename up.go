@@ -7,7 +7,7 @@ import (
 )
 
 // Up looks up a defined domain by name and starts it.
-func Up(name string) error {
+func Up(name string, connectAfterUp bool) error {
 	conn, err := libvirt.NewConnect("")
 	if err != nil {
 		return err
@@ -31,6 +31,10 @@ func Up(name string) error {
 		}
 	default:
 		return fmt.Errorf("error: cannot start VM in state: %v", state)
+	}
+
+	if connectAfterUp {
+		return connectSerial(dom)
 	}
 
 	return nil

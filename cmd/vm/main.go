@@ -112,7 +112,13 @@ func main() {
 				if name == "" {
 					return vm.ErrDomainNameRequired
 				}
-				return vm.Up(name)
+				return vm.Up(name, c.Bool("connect"))
+			},
+			Flags: []cli.Flag{
+				cli.BoolFlag{
+					Name:  "connect,c",
+					Usage: "Immediately connect to the started domain",
+				},
 			},
 		},
 		{
