@@ -48,9 +48,6 @@ func Connect(name string, mode string, user, identity string) error {
 }
 
 func connectSSH(dom *libvirt.Domain, user, identity string) error {
-	if user == "" {
-		user = os.Getenv("USER")
-	}
 	if identity == "" {
 		homeDir, err := os.UserHomeDir()
 		if err != nil {

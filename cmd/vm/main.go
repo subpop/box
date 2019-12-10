@@ -186,6 +186,7 @@ func main() {
 				cli.StringFlag{
 					Name:  "user,u",
 					Usage: "User to connect as over SSH",
+					Value: "root",
 				},
 				cli.StringFlag{
 					Name:  "identity,i",
