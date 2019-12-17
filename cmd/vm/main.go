@@ -5,7 +5,7 @@ import (
 
 	"github.com/subpop/vm"
 
-	"github.com/urfave/cli"
+	"github.com/urfave/cli/v2"
 )
 
 func main() {
@@ -14,7 +14,7 @@ func main() {
 
 	app = cli.NewApp()
 	app.Name = "vm"
-	app.Commands = []cli.Command{
+	app.Commands = []*cli.Command{
 		{
 			Name:        "create",
 			Usage:       "Creates a new domain from the specified image",
@@ -30,23 +30,23 @@ func main() {
 				return vm.Create(c.String("name"), image, c.StringSlice("disk"), opts)
 			},
 			Flags: []cli.Flag{
-				cli.StringFlag{
+				&cli.StringFlag{
 					Name:  "name,n",
 					Usage: "Assign `NAME` to the domain",
 				},
-				cli.StringSliceFlag{
+				&cli.StringSliceFlag{
 					Name:  "disk,d",
 					Usage: "Attach `FILE` to the domain as a secondary disk",
 				},
-				cli.BoolFlag{
+				&cli.BoolFlag{
 					Name:  "detach",
 					Usage: "Detach from the newly created domain",
 				},
-				cli.BoolFlag{
+				&cli.BoolFlag{
 					Name:  "transient,t",
 					Usage: "Create a non-persistent domain",
 				},
-				cli.BoolFlag{
+				&cli.BoolFlag{
 					Name:  "no-snapshot",
 					Usage: "Disable taking an initial snapshot upon creation",
 				},
@@ -74,11 +74,11 @@ func main() {
 				return vm.List(active, inactive)
 			},
 			Flags: []cli.Flag{
-				cli.BoolFlag{
+				&cli.BoolFlag{
 					Name:  "all",
 					Usage: "Include inactive domains",
 				},
-				cli.BoolFlag{
+				&cli.BoolFlag{
 					Name:  "inactive",
 					Usage: "List only inactive domains",
 				},
@@ -97,7 +97,7 @@ func main() {
 				return vm.Destroy(name, c.Bool("force"))
 			},
 			Flags: []cli.Flag{
-				cli.BoolFlag{
+				&cli.BoolFlag{
 					Name:  "force,f",
 					Usage: "Immediately destroy the domain, without prompting",
 				},
@@ -115,7 +115,7 @@ func main() {
 				return vm.Up(name, c.Bool("connect"))
 			},
 			Flags: []cli.Flag{
-				cli.BoolFlag{
+				&cli.BoolFlag{
 					Name:  "connect,c",
 					Usage: "Immediately connect to the started domain",
 				},
@@ -133,11 +133,11 @@ func main() {
 				return vm.Down(name, c.Bool("force"), c.Bool("graceful"))
 			},
 			Flags: []cli.Flag{
-				cli.BoolFlag{
+				&cli.BoolFlag{
 					Name:  "force,f",
 					Usage: "Immediately stop the domain, without prompting",
 				},
-				cli.BoolFlag{
+				&cli.BoolFlag{
 					Name:  "graceful,g",
 					Usage: "Power off the domain gracefully",
 				},
@@ -155,11 +155,11 @@ func main() {
 				return vm.Restart(name, c.Bool("force"), c.Bool("graceful"))
 			},
 			Flags: []cli.Flag{
-				cli.BoolFlag{
+				&cli.BoolFlag{
 					Name:  "force,f",
 					Usage: "Immediately restart the domain, without prompting",
 				},
-				cli.BoolFlag{
+				&cli.BoolFlag{
 					Name:  "graceful,g",
 					Usage: "Restart the domain gracefully",
 				},
@@ -178,17 +178,17 @@ func main() {
 				return vm.Connect(name, c.String("mode"), c.String("user"), c.String("identity"))
 			},
 			Flags: []cli.Flag{
-				cli.StringFlag{
+				&cli.StringFlag{
 					Name:  "mode,m",
 					Usage: "Connection mode: serial, console, or ssh",
 					Value: "serial",
 				},
-				cli.StringFlag{
+				&cli.StringFlag{
 					Name:  "user,u",
 					Usage: "User to connect as over SSH",
 					Value: "root",
 				},
-				cli.StringFlag{
+				&cli.StringFlag{
 					Name:  "identity,i",
 					Usage: "Attempt SSH authentication using `IDENTITY`",
 				},
@@ -207,7 +207,7 @@ func main() {
 				return vm.Inspect(name, c.String("format"))
 			},
 			Flags: []cli.Flag{
-				cli.StringFlag{
+				&cli.StringFlag{
 					Name:  "format,f",
 					Usage: "Specify output format",
 				},
@@ -216,7 +216,7 @@ func main() {
 		{
 			Name:  "image",
 			Usage: "Manage backing disk images",
-			Subcommands: []cli.Command{
+			Subcommands: []*cli.Command{
 				{
 					Name:  "list",
 					Usage: "List available backing disk images",
@@ -236,11 +236,11 @@ func main() {
 						return vm.ImageGet(path, c.String("rename"), c.Bool("quiet"))
 					},
 					Flags: []cli.Flag{
-						cli.StringFlag{
+						&cli.StringFlag{
 							Name:  "rename,r",
 							Usage: "Rename backing disk image to `NAME`",
 						},
-						cli.BoolFlag{
+						&cli.BoolFlag{
 							Name:  "quiet,q",
 							Usage: "No progress output",
 						},
@@ -258,7 +258,7 @@ func main() {
 						return vm.ImageRemove(name, c.Bool("force"))
 					},
 					Flags: []cli.Flag{
-						cli.BoolFlag{
+						&cli.BoolFlag{
 							Name:  "force,f",
 							Usage: "Force removal of a backing disk image without prompting",
 						},
@@ -269,7 +269,7 @@ func main() {
 		{
 			Name:  "template",
 			Usage: "Manage backing disk templates from libguestfs",
-			Subcommands: []cli.Command{
+			Subcommands: []*cli.Command{
 				{
 					Name:  "list",
 					Usage: "List templates available for import",
@@ -277,7 +277,7 @@ func main() {
 						return vm.TemplateList(c.String("sort"))
 					},
 					Flags: []cli.Flag{
-						cli.StringFlag{
+						&cli.StringFlag{
 							Name:  "sort,s",
 							Usage: "Sort list by `VALUE`",
 							Value: "name",
@@ -303,7 +303,7 @@ func main() {
 						return vm.TemplateInfo(name, c.String("arch"))
 					},
 					Flags: []cli.Flag{
-						cli.StringFlag{
+						&cli.StringFlag{
 							Name:  "arch,a",
 							Usage: "Specify alternate architecture",
 							Value: "x86_64",
@@ -322,12 +322,12 @@ func main() {
 						return vm.TemplateGet(name, c.String("arch"), c.Bool("quiet"))
 					},
 					Flags: []cli.Flag{
-						cli.StringFlag{
+						&cli.StringFlag{
 							Name:  "arch,a",
 							Usage: "Specify alternative architecture",
 							Value: "x86_64",
 						},
-						cli.BoolFlag{
+						&cli.BoolFlag{
 							Name:  "quiet,q",
 							Usage: "No progress output",
 						},
@@ -338,7 +338,7 @@ func main() {
 		{
 			Name:  "snapshot",
 			Usage: "Manage domain snapshots",
-			Subcommands: []cli.Command{
+			Subcommands: []*cli.Command{
 				{
 					Name:      "list",
 					Usage:     "List snapshots for a domain",
@@ -363,7 +363,7 @@ func main() {
 						return vm.SnapshotCreate(domain, c.String("name"))
 					},
 					Flags: []cli.Flag{
-						cli.StringFlag{
+						&cli.StringFlag{
 							Name:  "name,n",
 							Usage: "Create a snapshot with `NAME`",
 						},
@@ -381,7 +381,7 @@ func main() {
 						return vm.SnapshotRemove(domain, c.String("snapshot"))
 					},
 					Flags: []cli.Flag{
-						cli.StringFlag{
+						&cli.StringFlag{
 							Name:     "snapshot,s",
 							Usage:    "Remove snapshot named `NAME`",
 							Required: true,
@@ -400,7 +400,7 @@ func main() {
 						return vm.SnapshotRevert(domain, c.String("snapshot"))
 					},
 					Flags: []cli.Flag{
-						cli.StringFlag{
+						&cli.StringFlag{
 							Name:     "snapshot,s",
 							Usage:    "Revert to `SNAPSHOT`",
 							Required: true,
