@@ -43,7 +43,7 @@ clean:
 	-rm vm.fish
 
 
-.PHONY: install install-bin install-man install-data
+.PHONY: install install-bin install-man install-data uninstall
 
 install: install-bin install-man install-data
 
@@ -57,3 +57,9 @@ install-data: vm.fish vm.bash
 	install -D -m644 -t $(DESTDIR)/$(DATADIR)/fish/completions vm.fish
 	install -d $(DESTDIR)/$(DATADIR)/bash-completion/completions
 	install -m644 -T vm.bash $(DESTDIR)/$(DATADIR)/bash-completion/completions/vm
+
+uninstall:
+	rm $(DESTDIR)/$(BINDIR)/vm
+	rm $(DESTDIR)/$(MANDIR)/man1/vm.1.gz
+	rm $(DESTDIR)/$(DATADIR)/bash-completion/completions/vm
+	rm $(DESTDIR)/$(DATADIR)/fish/completions/vm.fish
