@@ -27,7 +27,7 @@ vm.fish: cmd/vm/*.go
 	go run ./cmd/vm --generate-fish-completion > $@
 
 vm.bash: cmd/vm/*.go
-	go run ./cmd/vm --generate-bash-completion >> $@
+	go run ./cmd/vm --generate-bash-completion > $@
 
 vm.1: cmd/vm/*.go
 	go run ./cmd/vm --generate-man-page > $@
