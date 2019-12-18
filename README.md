@@ -13,6 +13,30 @@ builder.libguestfs.org, and importing locally downloading images.
 go get -u github.com/subpop/vm/cmd/vm
 ```
 
+# Distribution #
+
+`vm` includes a `Makefile` to aid distributions in packaging. The default target
+will build `vm` along with shell completion data and a man page. The `Makefile`
+includes an `install` target to install the binary and data into distribution-appropriate
+locations. To override the installation directory (commonly referred to as the
+`DESTDIR`), set the `DESTDIR` variable when running the `install` target:
+
+```bash
+[link@localhost vm]$ make
+go build ./cmd/vm
+go run ./cmd/vm --generate-fish-completion > vm.fish
+go run ./cmd/vm --generate-bash-completion > vm.bash
+go run ./cmd/vm --generate-man-page > vm.1
+gzip -k vm.1
+[link@localhost vm]$ make DESTDIR=_inst install
+install -D -m755 -t _inst//usr/local/bin vm
+install -D -m644 -t _inst//usr/local/share/man/man1 vm.1.gz
+install -D -m644 -t _inst//usr/local/share/fish/completions vm.fish
+install -d _inst//usr/local/share/bash-completion/completions
+install -m644 -T vm.bash _inst//usr/local/share/bash-completion/completions/vm
+[link@localhost vm]$
+```
+
 # Usage #
 
 Download a base image:
