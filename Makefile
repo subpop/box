@@ -7,15 +7,39 @@ MAKEFLAGS += --no-builtin-rules
 
 PREFIX := /usr/local
 BINDIR := $(PREFIX)/bin
+DATADIR := $(PREFIX)/share
+MANDIR := $(DATADIR)/man
 DESTDIR := 
 
 vm:
 	go build ./cmd/vm
 
+vm.fish:
+	go run ./cmd/vm -- --generate-fish-completion > $@
+
+vm.1:
+	go run ./cmd/vm -- --generate-man-page > $@
+
+vm.1.gz: vm.1
+	gzip -k $^
+
 .PHONY: clean
 clean:
-	rm vm
+	-rm vm
+	-rm vm.1
+	-rm vm.1.gz
+	-rm vm.fish
 
-.PHONY: install
-install: vm
+
+.PHONY: install install-bin install-man install-data
+
+install: install-bin install-man install-data
+
+install-bin: vm
 	install -D -m755 -t $(DESTDIR)/$(BINDIR) $^
+
+install-man: vm.1.gz
+	install -D -m644 -t $(DESTDIR)/$(MANDIR)/man1 $^
+
+install-data: vm.fish
+	install -D -m644 -t $(DESTDIR)/$(DATADIR)/fish/completions vm.fish

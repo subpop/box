@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"os"
 
 	"github.com/subpop/vm"
@@ -409,10 +410,37 @@ func main() {
 				},
 			},
 		},
+		{
+			Name:   "--generate-man-page",
+			Hidden: true,
+			Action: generateDataFunc,
+		},
+		{
+			Name:   "--generate-fish-completion",
+			Hidden: true,
+			Action: generateDataFunc,
+		},
 	}
 
 	err = app.Run(os.Args)
 	if err != nil {
 		vm.LogErrorAndExit(err)
 	}
+}
+
+func generateDataFunc(c *cli.Context) error {
+	type GenerationFunc func() (string, error)
+	var generationFunc GenerationFunc
+	switch c.Command.Name {
+	case "--generate-fish-completion":
+		generationFunc = c.App.ToFishCompletion
+	case "--generate-man-page":
+		generationFunc = c.App.ToMan
+	}
+	data, err := generationFunc()
+	if err != nil {
+		return err
+	}
+	fmt.Println(data)
+	return nil
 }
