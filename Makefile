@@ -11,6 +11,15 @@ DATADIR := $(PREFIX)/share
 MANDIR := $(DATADIR)/man
 DESTDIR := 
 
+.PHONY: all
+all: bin data
+
+.PHONY: bin
+bin: vm
+
+.PHONY: data
+data: vm.fish vm.bash vm.1.gz
+
 vm: *.go cmd/vm/*.go
 	go build ./cmd/vm
 
