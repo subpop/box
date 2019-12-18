@@ -23,17 +23,20 @@ data: vm.fish vm.bash vm.1.gz
 vm: *.go cmd/vm/*.go
 	go build ./cmd/vm
 
-vm.fish:
-	go run ./cmd/vm -- --generate-fish-completion > $@
+vm.fish: cmd/vm/*.go
+	go run ./cmd/vm --generate-fish-completion > $@
 
-vm.bash:
-	go run ./cmd/vm -- --generate-bash-completion >> $@
+vm.bash: cmd/vm/*.go
+	go run ./cmd/vm --generate-bash-completion >> $@
 
-vm.1:
-	go run ./cmd/vm -- --generate-man-page > $@
+vm.1: cmd/vm/*.go
+	go run ./cmd/vm --generate-man-page > $@
 
 vm.1.gz: vm.1
 	gzip -k $^
+
+USAGE.md: cmd/vm/*.go
+	go run ./cmd/vm --generate-markdown > $@
 
 .PHONY: clean
 clean:
