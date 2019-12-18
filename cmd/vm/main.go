@@ -16,6 +16,7 @@ func main() {
 
 	app = cli.NewApp()
 	app.Name = "vm"
+	app.Version = "0.1"
 	app.EnableBashCompletion = true
 	app.Commands = []*cli.Command{
 		{
@@ -448,7 +449,7 @@ func generateDataFunc(c *cli.Context) error {
 	return nil
 }
 
-func bashCompleteReentrant(cmd *cli.Command, w io.Writer) {
+func bashCompleteCommand(cmd *cli.Command, w io.Writer) {
 	for _, name := range cmd.Names() {
 		fmt.Fprintf(w, "%v\n", name)
 	}
@@ -464,13 +465,13 @@ func bashCompleteReentrant(cmd *cli.Command, w io.Writer) {
 	}
 
 	for _, command := range cmd.Subcommands {
-		bashCompleteReentrant(command, w)
+		bashCompleteCommand(command, w)
 	}
 }
 
 func bashComplete(c *cli.Context) {
 	for _, command := range c.App.VisibleCommands() {
-		bashCompleteReentrant(command, c.App.Writer)
+		bashCompleteCommand(command, c.App.Writer)
 	}
 
 	// global flags
