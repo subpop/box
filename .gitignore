@@ -1,2 +1,6 @@
 /vm
 /.vscode/*
+/vm.bash
+/vm.fish
+/vm.1
+/vm.1.gz
