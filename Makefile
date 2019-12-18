@@ -41,6 +41,7 @@ clean:
 	-rm vm.1
 	-rm vm.1.gz
 	-rm vm.fish
+	-rm vm.bash
 
 
 .PHONY: install install-bin install-man install-data uninstall
