@@ -11,11 +11,14 @@ DATADIR := $(PREFIX)/share
 MANDIR := $(DATADIR)/man
 DESTDIR := 
 
-vm:
+vm: *.go cmd/vm/*.go
 	go build ./cmd/vm
 
 vm.fish:
 	go run ./cmd/vm -- --generate-fish-completion > $@
+
+vm.bash:
+	go run ./cmd/vm -- --generate-bash-completion >> $@
 
 vm.1:
 	go run ./cmd/vm -- --generate-man-page > $@
@@ -41,5 +44,7 @@ install-bin: vm
 install-man: vm.1.gz
 	install -D -m644 -t $(DESTDIR)/$(MANDIR)/man1 $^
 
-install-data: vm.fish
+install-data: vm.fish vm.bash
 	install -D -m644 -t $(DESTDIR)/$(DATADIR)/fish/completions vm.fish
+	install -d $(DESTDIR)/$(DATADIR)/bash-completion/completions
+	install -m644 -T vm.bash $(DESTDIR)/$(DATADIR)/bash-completion/completions/vm

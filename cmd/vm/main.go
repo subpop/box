@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"io"
 	"os"
 
 	"github.com/subpop/vm"
@@ -15,6 +16,7 @@ func main() {
 
 	app = cli.NewApp()
 	app.Name = "vm"
+	app.EnableBashCompletion = true
 	app.Commands = []*cli.Command{
 		{
 			Name:        "create",
@@ -421,6 +423,7 @@ func main() {
 			Action: generateDataFunc,
 		},
 	}
+	app.BashComplete = bashComplete
 
 	err = app.Run(os.Args)
 	if err != nil {
@@ -443,4 +446,41 @@ func generateDataFunc(c *cli.Context) error {
 	}
 	fmt.Println(data)
 	return nil
+}
+
+func bashCompleteReentrant(cmd *cli.Command, w io.Writer) {
+	for _, name := range cmd.Names() {
+		fmt.Fprintf(w, "%v\n", name)
+	}
+
+	for _, flag := range cmd.VisibleFlags() {
+		for _, name := range flag.Names() {
+			if len(name) > 1 {
+				fmt.Fprintf(w, "--%v\n", name)
+			} else {
+				fmt.Fprintf(w, "-%v\n", name)
+			}
+		}
+	}
+
+	for _, command := range cmd.Subcommands {
+		bashCompleteReentrant(command, w)
+	}
+}
+
+func bashComplete(c *cli.Context) {
+	for _, command := range c.App.VisibleCommands() {
+		bashCompleteReentrant(command, c.App.Writer)
+	}
+
+	// global flags
+	for _, flag := range c.App.VisibleFlags() {
+		for _, name := range flag.Names() {
+			if len(name) > 1 {
+				fmt.Fprintf(c.App.Writer, "--%v\n", name)
+			} else {
+				fmt.Fprintf(c.App.Writer, "-%v\n", name)
+			}
+		}
+	}
 }
