@@ -415,40 +415,44 @@ func main() {
 				},
 			},
 		},
-		{
-			Name:   "--generate-man-page",
+	}
+	app.Flags = []cli.Flag{
+		&cli.BoolFlag{
+			Name:   "generate-man-page",
 			Hidden: true,
-			Action: generateDataFunc,
 		},
-		{
-			Name:   "--generate-fish-completion",
+		&cli.BoolFlag{
+			Name:   "generate-fish-completion",
 			Hidden: true,
-			Action: generateDataFunc,
+		},
+		&cli.BoolFlag{
+			Name:   "generate-markdown",
+			Hidden: true,
 		},
 	}
 	app.BashComplete = bashComplete
+	app.Action = func(c *cli.Context) error {
+		type GenerationFunc func() (string, error)
+		var generationFunc GenerationFunc
+		if c.Bool("generate-fish-completion") {
+			generationFunc = c.App.ToFishCompletion
+		} else if c.Bool("generate-man-page") {
+			generationFunc = c.App.ToMan
+		} else if c.Bool("generate-markdown") {
+			generationFunc = c.App.ToMarkdown
+		}
+		data, err := generationFunc()
+		if err != nil {
+			return err
+		}
+		fmt.Println(data)
+		return nil
+	}
 
 	err = app.Run(os.Args)
 	if err != nil {
 		vm.LogErrorAndExit(err)
 	}
-}
-
-func generateDataFunc(c *cli.Context) error {
-	type GenerationFunc func() (string, error)
-	var generationFunc GenerationFunc
-	switch c.Command.Name {
-	case "--generate-fish-completion":
-		generationFunc = c.App.ToFishCompletion
-	case "--generate-man-page":
-		generationFunc = c.App.ToMan
-	}
-	data, err := generationFunc()
-	if err != nil {
-		return err
-	}
-	fmt.Println(data)
-	return nil
 }
 
 func bashCompleteCommand(cmd *cli.Command, w io.Writer) {
