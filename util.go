@@ -73,7 +73,7 @@ func inspect(filePath string, quiet bool) (string, error) {
 	switch filepath.Ext(filePath) {
 	case ".gz", ".xz":
 		return decompress(filePath, quiet)
-	case ".raw", ".img":
+	case ".raw", ".img", ".vdi":
 		return convert(filePath, quiet)
 	case ".tar":
 		return unarchive(filePath, quiet)
@@ -239,8 +239,15 @@ func convert(filePath string, quiet bool) (string, error) {
 	var err error
 
 	destFilePath := strings.TrimSuffix(filePath, filepath.Ext(filePath)) + ".qcow2"
+	var format string
+	switch filepath.Ext(filePath) {
+	case ".vdi":
+		format = "vdi"
+	default:
+		format = "raw"
+	}
 	cmd := exec.Command("qemu-img", "convert",
-		"-f", "raw",
+		"-f", format,
 		"-O", "qcow2",
 		filePath, destFilePath)
 	err = cmd.Run()
