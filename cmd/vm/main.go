@@ -40,20 +40,23 @@ func main() {
 			},
 			Flags: []cli.Flag{
 				&cli.StringFlag{
-					Name:  "name,n",
-					Usage: "Assign `NAME` to the domain",
+					Name:    "name",
+					Usage:   "Assign `NAME` to the domain",
+					Aliases: []string{"n"},
 				},
 				&cli.StringSliceFlag{
-					Name:  "disk,d",
-					Usage: "Attach `FILE` to the domain as a secondary disk",
+					Name:    "disk",
+					Usage:   "Attach `FILE` to the domain as a secondary disk",
+					Aliases: []string{"d"},
 				},
 				&cli.BoolFlag{
 					Name:  "detach",
 					Usage: "Detach from the newly created domain",
 				},
 				&cli.BoolFlag{
-					Name:  "transient,t",
-					Usage: "Create a non-persistent domain",
+					Name:    "transient",
+					Usage:   "Create a non-persistent domain",
+					Aliases: []string{"t"},
 				},
 				&cli.BoolFlag{
 					Name:  "no-snapshot",
@@ -111,8 +114,9 @@ func main() {
 			},
 			Flags: []cli.Flag{
 				&cli.BoolFlag{
-					Name:  "force,f",
-					Usage: "Immediately destroy the domain, without prompting",
+					Name:    "force",
+					Usage:   "Immediately destroy the domain, without prompting",
+					Aliases: []string{"f"},
 				},
 			},
 		},
@@ -129,8 +133,9 @@ func main() {
 			},
 			Flags: []cli.Flag{
 				&cli.BoolFlag{
-					Name:  "connect,c",
-					Usage: "Immediately connect to the started domain",
+					Name:    "connect",
+					Usage:   "Immediately connect to the started domain",
+					Aliases: []string{"c"},
 				},
 			},
 		},
@@ -147,12 +152,14 @@ func main() {
 			},
 			Flags: []cli.Flag{
 				&cli.BoolFlag{
-					Name:  "force,f",
-					Usage: "Immediately stop the domain, without prompting",
+					Name:    "force",
+					Usage:   "Immediately stop the domain, without prompting",
+					Aliases: []string{"f"},
 				},
 				&cli.BoolFlag{
-					Name:  "graceful,g",
-					Usage: "Power off the domain gracefully",
+					Name:    "graceful",
+					Usage:   "Power off the domain gracefully",
+					Aliases: []string{"g"},
 				},
 			},
 		},
@@ -169,12 +176,14 @@ func main() {
 			},
 			Flags: []cli.Flag{
 				&cli.BoolFlag{
-					Name:  "force,f",
-					Usage: "Immediately restart the domain, without prompting",
+					Name:    "force",
+					Usage:   "Immediately restart the domain, without prompting",
+					Aliases: []string{"f"},
 				},
 				&cli.BoolFlag{
-					Name:  "graceful,g",
-					Usage: "Restart the domain gracefully",
+					Name:    "graceful",
+					Usage:   "Restart the domain gracefully",
+					Aliases: []string{"g"},
 				},
 			},
 		},
@@ -192,18 +201,21 @@ func main() {
 			},
 			Flags: []cli.Flag{
 				&cli.StringFlag{
-					Name:  "mode,m",
-					Usage: "Connection mode: serial, console, or ssh",
-					Value: "serial",
+					Name:    "mode",
+					Usage:   "Connection mode: serial, console, or ssh",
+					Aliases: []string{"m"},
+					Value:   "serial",
 				},
 				&cli.StringFlag{
-					Name:  "user,u",
-					Usage: "User to connect as over SSH",
-					Value: "root",
+					Name:    "user",
+					Usage:   "User to connect as over SSH",
+					Aliases: []string{"u"},
+					Value:   "root",
 				},
 				&cli.StringFlag{
-					Name:  "identity,i",
-					Usage: "Attempt SSH authentication using `IDENTITY`",
+					Name:    "identity",
+					Usage:   "Attempt SSH authentication using `IDENTITY`",
+					Aliases: []string{"i"},
 				},
 			},
 		},
@@ -221,8 +233,9 @@ func main() {
 			},
 			Flags: []cli.Flag{
 				&cli.StringFlag{
-					Name:  "format,f",
-					Usage: "Specify output format",
+					Name:    "format",
+					Usage:   "Specify output format",
+					Aliases: []string{"f"},
 				},
 			},
 		},
@@ -250,12 +263,14 @@ func main() {
 					},
 					Flags: []cli.Flag{
 						&cli.StringFlag{
-							Name:  "rename,r",
-							Usage: "Rename backing disk image to `NAME`",
+							Name:    "rename",
+							Usage:   "Rename backing disk image to `NAME`",
+							Aliases: []string{"r"},
 						},
 						&cli.BoolFlag{
-							Name:  "quiet,q",
-							Usage: "No progress output",
+							Name:    "quiet",
+							Usage:   "No progress output",
+							Aliases: []string{"q"},
 						},
 					},
 				},
@@ -272,8 +287,9 @@ func main() {
 					},
 					Flags: []cli.Flag{
 						&cli.BoolFlag{
-							Name:  "force,f",
-							Usage: "Force removal of a backing disk image without prompting",
+							Name:    "force",
+							Usage:   "Force removal of a backing disk image without prompting",
+							Aliases: []string{"f"},
 						},
 					},
 				},
@@ -291,9 +307,10 @@ func main() {
 					},
 					Flags: []cli.Flag{
 						&cli.StringFlag{
-							Name:  "sort,s",
-							Usage: "Sort list by `VALUE`",
-							Value: "name",
+							Name:    "sort",
+							Usage:   "Sort list by `VALUE`",
+							Aliases: []string{"s"},
+							Value:   "name",
 						},
 					},
 				},
@@ -317,9 +334,10 @@ func main() {
 					},
 					Flags: []cli.Flag{
 						&cli.StringFlag{
-							Name:  "arch,a",
-							Usage: "Specify alternate architecture",
-							Value: "x86_64",
+							Name:    "arch",
+							Usage:   "Specify alternate architecture",
+							Aliases: []string{"a"},
+							Value:   "x86_64",
 						},
 					},
 				},
@@ -336,13 +354,15 @@ func main() {
 					},
 					Flags: []cli.Flag{
 						&cli.StringFlag{
-							Name:  "arch,a",
-							Usage: "Specify alternative architecture",
-							Value: "x86_64",
+							Name:    "arch",
+							Usage:   "Specify alternative architecture",
+							Aliases: []string{"a"},
+							Value:   "x86_64",
 						},
 						&cli.BoolFlag{
-							Name:  "quiet,q",
-							Usage: "No progress output",
+							Name:    "quiet",
+							Usage:   "No progress output",
+							Aliases: []string{"q"},
 						},
 					},
 				},
@@ -377,8 +397,9 @@ func main() {
 					},
 					Flags: []cli.Flag{
 						&cli.StringFlag{
-							Name:  "name,n",
-							Usage: "Create a snapshot with `NAME`",
+							Name:    "name",
+							Usage:   "Create a snapshot with `NAME`",
+							Aliases: []string{"n"},
 						},
 					},
 				},
@@ -395,8 +416,9 @@ func main() {
 					},
 					Flags: []cli.Flag{
 						&cli.StringFlag{
-							Name:     "snapshot,s",
+							Name:     "snapshot",
 							Usage:    "Remove snapshot named `NAME`",
+							Aliases:  []string{"s"},
 							Required: true,
 						},
 					},
@@ -414,8 +436,9 @@ func main() {
 					},
 					Flags: []cli.Flag{
 						&cli.StringFlag{
-							Name:     "snapshot,s",
+							Name:     "snapshot",
 							Usage:    "Revert to `SNAPSHOT`",
+							Aliases:  []string{"s"},
 							Required: true,
 						},
 					},
