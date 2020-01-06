@@ -470,6 +470,8 @@ func main() {
 			generationFunc = c.App.ToMan
 		} else if c.Bool("generate-markdown") {
 			generationFunc = c.App.ToMarkdown
+		} else {
+			cli.ShowAppHelpAndExit(c, 0)
 		}
 		data, err := generationFunc()
 		if err != nil {
