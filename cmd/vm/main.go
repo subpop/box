@@ -33,7 +33,10 @@ func main() {
 					IsTransient:           c.Bool("transient"),
 					CreateInitialSnapshot: !c.Bool("no-snapshot"),
 				}
-				return vm.Create(c.String("name"), image, c.StringSlice("disk"), opts)
+				cfg := vm.CreateConfig{
+					UEFI: c.Bool("uefi"),
+				}
+				return vm.Create(c.String("name"), image, c.StringSlice("disk"), opts, cfg)
 			},
 			Flags: []cli.Flag{
 				&cli.StringFlag{
@@ -55,6 +58,10 @@ func main() {
 				&cli.BoolFlag{
 					Name:  "no-snapshot",
 					Usage: "Disable taking an initial snapshot upon creation",
+				},
+				&cli.BoolFlag{
+					Name:  "uefi",
+					Usage: "Use UEFI boot loader",
 				},
 			},
 		},

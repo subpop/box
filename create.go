@@ -33,10 +33,17 @@ type CreateOptions struct {
 	CreateInitialSnapshot bool
 }
 
+// CreateConfig store customization options for modifying the domain parameters
+// during creation.
+type CreateConfig struct {
+	// Use UEFI boot instead of BIOS
+	UEFI bool
+}
+
 // Create defines a new domain using name and creating a disk image backed by
 // image. If connect is true, a console is attached to the newly created domain.
 // If transient is true, the domain is destroy upon shutdown.
-func Create(name, image string, disks []string, options CreateOptions) error {
+func Create(name, image string, disks []string, options CreateOptions, config CreateConfig) error {
 	if name == "" {
 		name = petname.Generate(2, "-")
 	}
@@ -143,6 +150,14 @@ func Create(name, image string, disks []string, options CreateOptions) error {
 			},
 		}
 		domain.Devices.Disks = append(domain.Devices.Disks, disk)
+	}
+
+	if config.UEFI {
+		domain.OS.Loader = loader{
+			ReadOnly: "yes",
+			Type:     "pflash",
+			Value:    "/usr/share/edk2/ovmf/OVMF_CODE.fd",
+		}
 	}
 
 	data, err := xml.Marshal(domain)
