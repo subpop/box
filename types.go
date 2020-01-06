@@ -126,6 +126,12 @@ type features struct {
 	Apic string `xml:"apic"`
 }
 
+type loader struct {
+	ReadOnly string `xml:"readonly,attr"`
+	Type     string `xml:"type,attr"`
+	Value    string `xml:",chardata"`
+}
+
 type boot struct {
 	Dev string `xml:"dev,attr"`
 }
@@ -137,8 +143,9 @@ type osType struct {
 }
 
 type operatingSystem struct {
-	Type osType `xml:"type"`
-	Boot boot   `xml:"boot"`
+	Type   osType `xml:"type"`
+	Boot   boot   `xml:"boot"`
+	Loader loader `xml:"loader,omitempty"`
 }
 
 type domain struct {
