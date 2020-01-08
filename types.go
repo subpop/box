@@ -50,7 +50,7 @@ type interfaceSource struct {
 type netInterface struct {
 	Type   string          `xml:"type,attr"`
 	Source interfaceSource `xml:"source"`
-	MAC    *mac            `xml:"mac,omitempty"`
+	MAC    *mac            `xml:"mac,omitempty" json:",omitempty"`
 	Model  netModel        `xml:"model"`
 }
 
@@ -62,7 +62,7 @@ type controller struct {
 	Type   string  `xml:"type,attr"`
 	Index  string  `xml:"index,attr"`
 	Model  string  `xml:"model,attr"`
-	Master *master `xml:"master,omitempty"`
+	Master *master `xml:"master,omitempty" json:",omitempty"`
 }
 
 type target struct {
@@ -146,7 +146,7 @@ type operatingSystem struct {
 	Type     osType  `xml:"type"`
 	Boot     boot    `xml:"boot"`
 	Firmware string  `xml:"firmware,attr,omitempty"`
-	Loader   *loader `xml:"loader,omitempty"`
+	Loader   *loader `xml:"loader,omitempty" json:",omitempty"`
 }
 
 type domain struct {
