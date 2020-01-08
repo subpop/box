@@ -153,7 +153,7 @@ func Create(name, image string, disks []string, options CreateOptions, config Cr
 	}
 
 	if config.UEFI {
-		domain.OS.Loader = loader{
+		domain.OS.Loader = &loader{
 			ReadOnly: "yes",
 			Type:     "pflash",
 			Value:    "/usr/share/edk2/ovmf/OVMF_CODE.fd",

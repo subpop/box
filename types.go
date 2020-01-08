@@ -143,9 +143,10 @@ type osType struct {
 }
 
 type operatingSystem struct {
-	Type   osType `xml:"type"`
-	Boot   boot   `xml:"boot"`
-	Loader loader `xml:"loader,omitempty"`
+	Type     osType  `xml:"type"`
+	Boot     boot    `xml:"boot"`
+	Firmware string  `xml:"firmware,attr,omitempty"`
+	Loader   *loader `xml:"loader,omitempty"`
 }
 
 type domain struct {
