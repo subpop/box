@@ -121,6 +121,9 @@ func transfer(filePath string, quiet bool) (string, error) {
 			fmt.Printf("\rcopying... %s", humanize.Bytes(bytesWritten))
 		}
 	})
+	if !quiet {
+		fmt.Println()
+	}
 	if err != nil {
 		return "", err
 	}
@@ -168,6 +171,9 @@ func download(rawurl string, quiet bool) (string, error) {
 			fmt.Printf("\rdownloading... %s", humanize.Bytes(bytesWritten))
 		}
 	})
+	if !quiet {
+		fmt.Println()
+	}
 	if err != nil {
 		return "", err
 	}
@@ -218,6 +224,9 @@ func decompress(filePath string, quiet bool) (string, error) {
 			fmt.Printf("\rdecompressing... %s", humanize.Bytes(bytesWritten))
 		}
 	})
+	if !quiet {
+		fmt.Println()
+	}
 	if err != nil {
 		return "", err
 	}
@@ -299,6 +308,9 @@ func unarchive(filePath string, quiet bool) (string, error) {
 					fmt.Printf("\rextracting... %s", humanize.Bytes(bytesWritten))
 				}
 			})
+			if !quiet {
+				fmt.Println()
+			}
 			if err != nil {
 				return "", err
 			}
