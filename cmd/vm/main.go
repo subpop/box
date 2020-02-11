@@ -16,7 +16,7 @@ func main() {
 
 	app = cli.NewApp()
 	app.Name = "vm"
-	app.Version = "0.1"
+	app.Version = "0.1.1"
 	app.Usage = "control virtual machines"
 	app.Description = "`vm` is a program to manage and interact with virtual machines."
 	app.EnableBashCompletion = true
