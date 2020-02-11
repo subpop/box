@@ -59,6 +59,16 @@ var ErrUnsupportedXMLFormat = UnsupportedFormatErr{
 	format: "XML",
 }
 
+// UnsupportedDomainCapabilityErr occurs when a domain capability is not
+// supported on the host.
+type UnsupportedDomainCapabilityErr struct {
+	capability string
+}
+
+func (e UnsupportedDomainCapabilityErr) Error() string {
+	return "error: domain capability not supported: " + e.capability
+}
+
 // LogErrorAndExit logs err and exits with a non-zero exit code.
 func LogErrorAndExit(err error) {
 	switch err.(type) {
