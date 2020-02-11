@@ -153,6 +153,7 @@ func Create(name, image string, disks []string, options CreateOptions, config Cr
 	}
 
 	if config.UEFI {
+		options.CreateInitialSnapshot = false
 		domain.OS.Loader = &loader{
 			ReadOnly: "yes",
 			Type:     "pflash",
