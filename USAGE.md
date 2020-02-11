@@ -44,13 +44,15 @@ Creates a new domain from the specified image
 
 **--detach**: Detach from the newly created domain
 
-**--disk**="": Attach `FILE` to the domain as a secondary disk
+**--disk, -d**="": Attach `FILE` to the domain as a secondary disk
 
-**--name**="": Assign `NAME` to the domain
+**--name, -n**="": Assign `NAME` to the domain
 
 **--no-snapshot**: Disable taking an initial snapshot upon creation
 
-**--transient**: Create a non-persistent domain
+**--transient, -t**: Create a non-persistent domain
+
+**--uefi**: Use UEFI boot loader
 
 ## list
 
@@ -64,45 +66,45 @@ List defined domains
 
 Destroy a domain
 
-**--force**: Immediately destroy the domain, without prompting
+**--force, -f**: Immediately destroy the domain, without prompting
 
 ## up
 
 Start a domain
 
-**--connect**: Immediately connect to the started domain
+**--connect, -c**: Immediately connect to the started domain
 
 ## down
 
 Stop a domain
 
-**--force**: Immediately stop the domain, without prompting
+**--force, -f**: Immediately stop the domain, without prompting
 
-**--graceful**: Power off the domain gracefully
+**--graceful, -g**: Power off the domain gracefully
 
 ## restart
 
 Restart a domain
 
-**--force**: Immediately restart the domain, without prompting
+**--force, -f**: Immediately restart the domain, without prompting
 
-**--graceful**: Restart the domain gracefully
+**--graceful, -g**: Restart the domain gracefully
 
 ## connect
 
 Connect to a running domain
 
-**--identity**="": Attempt SSH authentication using `IDENTITY`
+**--identity, -i**="": Attempt SSH authentication using `IDENTITY`
 
-**--mode**="": Connection mode: serial, console, or ssh (default: serial)
+**--mode, -m**="": Connection mode: serial, console, or ssh (default: serial)
 
-**--user**="": User to connect as over SSH (default: root)
+**--user, -u**="": User to connect as over SSH (default: root)
 
 ## inspect
 
 Show details about a domain
 
-**--format**="": Specify output format
+**--format, -f**="": Specify output format
 
 ## image
 
@@ -116,15 +118,15 @@ List available backing disk images
 
 Retrieve a new backing disk image
 
-**--quiet**: No progress output
+**--quiet, -q**: No progress output
 
-**--rename**="": Rename backing disk image to `NAME`
+**--rename, -r**="": Rename backing disk image to `NAME`
 
 ### remove
 
 Remove a backing disk image
 
-**--force**: Force removal of a backing disk image without prompting
+**--force, -f**: Force removal of a backing disk image without prompting
 
 ## template
 
@@ -134,7 +136,7 @@ Manage backing disk templates from libguestfs
 
 List templates available for import
 
-**--sort**="": Sort list by `VALUE` (default: name)
+**--sort, -s**="": Sort list by `VALUE` (default: name)
 
 ### sync
 
@@ -144,15 +146,15 @@ Refresh available templates from build service
 
 Print details about a template
 
-**--arch**="": Specify alternate architecture (default: x86_64)
+**--arch, -a**="": Specify alternate architecture (default: x86_64)
 
 ### get
 
 Retrieve and prepare a template from build service
 
-**--arch**="": Specify alternative architecture (default: x86_64)
+**--arch, -a**="": Specify alternative architecture (default: x86_64)
 
-**--quiet**: No progress output
+**--quiet, -q**: No progress output
 
 ## snapshot
 
@@ -166,19 +168,19 @@ List snapshots for a domain
 
 Take a new snapshot for a domain
 
-**--name**="": Create a snapshot with `NAME`
+**--name, -n**="": Create a snapshot with `NAME`
 
 ### remove
 
 Remove a snapshot for a domain
 
-**--snapshot**="": Remove snapshot named `NAME`
+**--snapshot, -s**="": Remove snapshot named `NAME`
 
 ### revert
 
 Revert a domain to snapshot
 
-**--snapshot**="": Revert to `SNAPSHOT`
+**--snapshot, -s**="": Revert to `SNAPSHOT`
 
 ## help, h
 
