@@ -179,6 +179,220 @@ func (d domain) String() string {
 	return b.String()
 }
 
+type domainCapabilities struct {
+	Path    string `xml:"path"`
+	Domain  string `xml:"domain"`
+	Machine string `xml:"machine"`
+	Arch    string `xml:"arch"`
+	VCPU    struct {
+		Max string `xml:"max,attr,omitempty"`
+	} `xml:"vcpu,omitempty"`
+	IOThreads struct {
+		Supported string `xml:"supported,attr,omitempty"`
+	} `xml:"iothreads,omitempty"`
+	OS struct {
+		Supported string `xml:"supported,attr,omitempty"`
+		Enum      []struct {
+			Name  string   `xml:"name,attr,omitempty"`
+			Value []string `xml:"value,omitempty"`
+		} `xml:"enum,omitempty"`
+		Loader struct {
+			Supported string `xml:"supported,attr,omitempty"`
+			Value     string `xml:"value,omitempty"`
+			Enum      []struct {
+				Name  string   `xml:"name,attr,omitempty"`
+				Value []string `xml:"value,omitempty"`
+			} `xml:"enum,omitempty"`
+		} `xml:"loader,omitempty"`
+	} `xml:"os,omitempty"`
+	CPU struct {
+		Mode []struct {
+			Name      string `xml:"name,attr,omitempty"`
+			Supported string `xml:"supported,attr,omitempty"`
+			Model     struct {
+				Fallback string `xml:"fallback,attr,omitempty"`
+				Usable   string `xml:"usable,attr,omitempty"`
+				CharData string `xml:",chardata"`
+			} `xml:"model,omitempty"`
+			Vendor  string `xml:"vendor,omitempty"`
+			Feature []struct {
+				Policy string `xml:"policy,attr,omitempty"`
+				Name   string `xml:"name,attr,omitempty"`
+			} `xml:"feature,omitempty"`
+		} `xml:"mode,omitempty"`
+	} `xml:"cpu,omitempty"`
+	Devices struct {
+		Disk struct {
+			Supported string `xml:"supported,attr,omitempty"`
+			Enum      []struct {
+				Name  string   `xml:"name,attr,omitempty"`
+				Value []string `xml:"value,omitempty"`
+			} `xml:"enum,omitempty"`
+		} `xml:"disk,omitempty"`
+		Graphics struct {
+			Supported string `xml:"supported,attr,omitempty"`
+			Enum      []struct {
+				Name  string   `xml:"name,attr,omitempty"`
+				Value []string `xml:"value,omitempty"`
+			} `xml:"enum,omitempty"`
+		} `xml:"graphics,omitempty"`
+		Video struct {
+			Supported string `xml:"supported,attr,omitempty"`
+			Enum      []struct {
+				Name  string   `xml:"name,attr,omitempty"`
+				Value []string `xml:"value,omitempty"`
+			} `xml:"enum,omitempty"`
+		} `xml:"video,omitempty"`
+		HostDev struct {
+			Supported string `xml:"supported,attr,omitempty"`
+			Enum      []struct {
+				Name  string   `xml:"name,attr,omitempty"`
+				Value []string `xml:"value,omitempty"`
+			} `xml:"enum,omitempty"`
+		} `xml:"hostdev,omitempty"`
+	} `xml:"devices,omitempty"`
+	Features struct {
+		GIC struct {
+			Supported string `xml:"supported,attr,omitempty"`
+		} `xml:"gic,omitempty"`
+		VMCoreInfo struct {
+			Supported string `xml:"supported,attr,omitempty"`
+		} `xml:"vmcoreinfo,omitempty"`
+		GenID struct {
+			Supported string `xml:"supported,attr,omitempty"`
+		} `xml:"genid,omitempty"`
+		Sev struct {
+			Supported string `xml:"supported,attr,omitempty"`
+		} `xml:"sev,omitempty"`
+	} `xml:"features,omitempty"`
+}
+
+type capabilities struct {
+	Host struct {
+		UUID string `xml:"uuid,omitempty"`
+		CPU  struct {
+			Arch      string `xml:"arch,omitempty"`
+			Model     string `xml:"model,omitempty"`
+			Vendor    string `xml:"vendor,omitempty"`
+			Microcode struct {
+				Version string `xml:"version,attr,omitempty"`
+			} `xml:"microcode,omitempty"`
+			Counter struct {
+				Name      string `xml:"name,attr,omitempty"`
+				Frequency string `xml:"frequency,attr,omitempty"`
+				Scaling   string `xml:"scaling,attr,omitempty"`
+			} `xml:"counter,omitempty"`
+			Topology struct {
+				Sockets string `xml:"sockets,attr,omitempty"`
+				Cores   string `xml:"cores,attr,omitempty"`
+				Threads string `xml:"threads,attr,omitempty"`
+			} `xml:"topology,omitempty"`
+			Features []struct {
+				Name string `xml:"name,attr,omitempty"`
+			} `xml:"feature,omitempty"`
+			Pages []struct {
+				Unit string `xml:"unit,attr,omitempty"`
+				Size string `xml:"size,attr,omitempty"`
+			} `xml:"pages,omitempty"`
+		} `xml:"cpu,omitempty"`
+		PowerManagement struct {
+			SuspendMem    struct{} `xml:"suspend_mem,omitempty"`
+			SuspendDisk   struct{} `xml:"suspend_disk,omitempty"`
+			SuspendHybrid struct{} `xml:"suspend_hybrid,omitempty"`
+		} `xml:"power_management,omitempty"`
+		IOMMU struct {
+			Support string `xml:"support,attr,omitempty"`
+		} `xml:"iommu,omitempty"`
+		MigrationFeatures struct {
+			Live          struct{} `xml:"live,omitempty"`
+			URITransports struct {
+				URITransport []string `xml:"uri_transport,omitempty"`
+			} `xml:"uri_transports,omitempty"`
+		} `xml:"migration_features,omitempty"`
+		Topology struct {
+			Cells struct {
+				Num  string `xml:"num,attr,omitempty"`
+				Cell []struct {
+					ID     string `xml:"id,attr,omitempty"`
+					Memory struct {
+						Unit     string `xml:"unit,attr,omitempty"`
+						CharData string `xml:",chardata"`
+					} `xml:"memory,omitempty"`
+					Pages []struct {
+						Unit     string `xml:"unit,attr,omitempty"`
+						Size     string `xml:"size,attr,omitempty"`
+						CharData string `xml:",chardata"`
+					} `xml:"pages,omitempty"`
+					Distances struct {
+						Sibling struct {
+							ID    string `xml:"id,attr,omitempty"`
+							Value string `xml:"value,attr,omitempty"`
+						} `xml:"sibling,omitempty"`
+					} `xml:"distances,omitempty"`
+					CPUs struct {
+						Num string `xml:"num,attr,omitempty"`
+						CPU []struct {
+							ID       string `xml:"id,attr,omitempty"`
+							SocketID string `xml:"socket_id,attr,omitempty"`
+							CoreID   string `xml:"core_id,attr,omitempty"`
+							Siblings string `xml:"siblings,attr,omitempty"`
+						} `xml:"cpu,omitempty"`
+					} `xml:"cpus,omitempty"`
+				} `xml:"cell,omitempty"`
+			} `xml:"cells,omitempty"`
+		} `xml:"topology,omitempty"`
+		Cache struct {
+			Bank struct {
+				ID    string `xml:"id,attr,omitempty"`
+				Level string `xml:"level,attr,omitempty"`
+				Type  string `xml:"type,attr,omitempty"`
+				Size  string `xml:"size,attr,omitempty"`
+				Unit  string `xml:"unit,attr,omitempty"`
+				CPUS  string `xml:"cpus,attr,omitempty"`
+			} `xml:"bank,omitempty"`
+		} `xml:"cache,omitempty"`
+		SecModel struct {
+			Model     string `xml:"model,omitempty"`
+			DOI       string `xml:"doi,omitempty"`
+			BaseLabel []struct {
+				Type     string `xml:"type,attr,omitempty"`
+				CharData string `xml:",chardata"`
+			} `xml:"baselabel,omitempty"`
+		} `xml:"secmodel,omitempty"`
+	} `xml:"host,omitempty"`
+	Guest []struct {
+		OSType string `xml:"os_type,omitempty"`
+		Arch   struct {
+			Name     string `xml:"name,attr,omitempty"`
+			WordSize string `xml:"wordsize,omitempty"`
+			Emulator string `xml:"emulator,omitempty"`
+			Machine  []struct {
+				MaxCPUs   string `xml:"maxCpus,attr,omitempty"`
+				Canonical string `xml:"canonical,attr,omitempty"`
+				CharData  string `xml:",chardata"`
+			} `xml:"machine,omitempty"`
+			Domain []struct {
+				Type string `xml:"type,attr,omitempty"`
+			} `xml:"domain,omitempty"`
+		} `xml:"arch,omitempty"`
+		Features struct {
+			CPUSelection struct{} `xml:"cpuselection,omitempty"`
+			DeviceBoot   struct{} `xml:"deviceboot,omitempty"`
+			DiskSnapshot struct{} `xml:"disksnapshot,omitempty"`
+			ACPI         struct {
+				Default string `xml:"default,attr,omitempty"`
+				Toggle  string `xml:"toggle,attr,omitempty"`
+			} `xml:"acpi,omitempty"`
+			APIC struct {
+				Default string `xml:"default,attr,omitempty"`
+				Toggle  string `xml:"toggle,attr,omitempty"`
+			} `xml:"apic,omitempty"`
+			PAE    struct{} `xml:"pae,omitempty"`
+			NonPAE struct{} `xml:"nonpae,omitempty"`
+		} `xml:"features,omitempty"`
+	} `xml:"guest,omitempty"`
+}
+
 const domainXML string = `
 <domain type="kvm">
   <name></name>

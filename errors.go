@@ -37,6 +37,28 @@ var ErrURLOrPathRequired = MissingPositionalArgErr{
 	name: "URL or path",
 }
 
+// An UnsupportedFormatErr occurs when a command is invoked that does not
+// support the specified format.
+type UnsupportedFormatErr struct {
+	format string
+}
+
+func (e UnsupportedFormatErr) Error() string {
+	return "error: unsupported format: " + e.format
+}
+
+// ErrUnsupportedJSONFormat represents a command requesting JSON when it is
+// not supported.
+var ErrUnsupportedJSONFormat = UnsupportedFormatErr{
+	format: "JSON",
+}
+
+// ErrUnsupportedXMLFormat represents a command requesting XML when it is
+// not supported.
+var ErrUnsupportedXMLFormat = UnsupportedFormatErr{
+	format: "XML",
+}
+
 // LogErrorAndExit logs err and exits with a non-zero exit code.
 func LogErrorAndExit(err error) {
 	switch err.(type) {

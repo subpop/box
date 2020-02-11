@@ -445,6 +445,38 @@ func main() {
 				},
 			},
 		},
+		{
+			Name:      "capabilities",
+			Usage:     "Get details on hypervisor capabilities",
+			UsageText: "vm capabilities",
+			Action: func(c *cli.Context) error {
+				return vm.Capabilities(c.String("format"))
+			},
+			Flags: []cli.Flag{
+				&cli.StringFlag{
+					Name:    "format",
+					Usage:   "Specify output format",
+					Aliases: []string{"f"},
+					Value:   "xml",
+				},
+			},
+		},
+		{
+			Name:      "domain-capabilities",
+			Usage:     "Get details on domain capabilities",
+			UsageText: "vm domain-capabilities",
+			Action: func(c *cli.Context) error {
+				return vm.DomainCapabilities(c.String("format"))
+			},
+			Flags: []cli.Flag{
+				&cli.StringFlag{
+					Name:    "format",
+					Usage:   "Specify output format",
+					Aliases: []string{"f"},
+					Value:   "xml",
+				},
+			},
+		},
 	}
 	app.Flags = []cli.Flag{
 		&cli.BoolFlag{
