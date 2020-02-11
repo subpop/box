@@ -123,28 +123,57 @@ func Create(name, image string, disks []string, options CreateOptions, config Cr
 			device = "disk"
 		}
 
-		var drv driver
+		var drv struct {
+			Name string `xml:"name,attr"`
+			Type string `xml:"type,attr"`
+		}
 		switch filepath.Ext(d) {
 		case ".qcow2":
-			drv = driver{
+			drv = struct {
+				Name string `xml:"name,attr"`
+				Type string `xml:"type,attr"`
+			}{
 				Name: "qemu",
 				Type: "qcow2",
 			}
 		default:
-			drv = driver{
+			drv = struct {
+				Name string `xml:"name,attr"`
+				Type string `xml:"type,attr"`
+			}{
 				Name: "qemu",
 				Type: "raw",
 			}
 		}
 
-		disk := disk{
+		disk := struct {
+			Type   string `xml:"type,attr"`
+			Device string `xml:"device,attr"`
+			Driver struct {
+				Name string `xml:"name,attr"`
+				Type string `xml:"type,attr"`
+			} `xml:"driver"`
+			Source struct {
+				File string `xml:"file,attr"`
+			} `xml:"source"`
+			Target struct {
+				Dev string `xml:"dev,attr"`
+				Bus string `xml:"bus,attr"`
+			} `xml:"target"`
+			ReadOnly string `xml:"readonly,omitempty"`
+		}{
 			Type:   "file",
 			Device: device,
 			Driver: drv,
-			Source: source{
+			Source: struct {
+				File string `xml:"file,attr"`
+			}{
 				File: dest.Name(),
 			},
-			Target: target{
+			Target: struct {
+				Dev string `xml:"dev,attr"`
+				Bus string `xml:"bus,attr"`
+			}{
 				Dev: "hdb",
 				Bus: "ide",
 			},
@@ -159,10 +188,14 @@ func Create(name, image string, disks []string, options CreateOptions, config Cr
 			return err
 		}
 
-		domain.OS.Loader = &loader{
+		domain.OS.Loader = &struct {
+			ReadOnly string `xml:"readonly,attr"`
+			Type     string `xml:"type,attr"`
+			CharData string `xml:",chardata"`
+		}{
 			ReadOnly: "yes",
 			Type:     "pflash",
-			Value:    domainCapabilities.OS.Loader.Value,
+			CharData: domainCapabilities.OS.Loader.Value,
 		}
 	}
 

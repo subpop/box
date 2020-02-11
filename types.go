@@ -9,160 +9,110 @@ import (
 	"github.com/dustin/go-humanize"
 )
 
-type videoAcceleration struct {
-	Accel3d string `xml:"accel3d,attr"`
-}
-
-type videoModel struct {
-	Type         string            `xml:"type,attr,omitempty"`
-	VRAM         string            `xml:"vram,attr,omitempty"`
-	Heads        string            `xml:"heads,attr,omitempty"`
-	Acceleration videoAcceleration `xml:"acceleration,omitempty"`
-}
-
-type video struct {
-	Model videoModel `xml:"model,omitempty"`
-}
-
-type consoleTarget struct {
-	Type  string `xml:"type,attr"`
-	Alias string `xml:"alias"`
-}
-
-type console struct {
-	Type   string        `xml:"type,attr"`
-	Target consoleTarget `xml:"target"`
-}
-
-type netModel struct {
-	Type string `xml:"type,attr"`
-}
-
-type mac struct {
-	Address string `xml:"address,attr"`
-}
-
-type interfaceSource struct {
-	Network string `xml:"network,attr,omitempty"`
-	Bridge  string `xml:"bridge,attr,omitempty"`
-}
-
-type netInterface struct {
-	Type   string          `xml:"type,attr"`
-	Source interfaceSource `xml:"source"`
-	MAC    *mac            `xml:"mac,omitempty" json:",omitempty"`
-	Model  netModel        `xml:"model"`
-}
-
-type master struct {
-	StartPort string `xml:"startport,attr,omitempty"`
-}
-
-type controller struct {
-	Type   string  `xml:"type,attr"`
-	Index  string  `xml:"index,attr"`
-	Model  string  `xml:"model,attr"`
-	Master *master `xml:"master,omitempty" json:",omitempty"`
-}
-
-type target struct {
-	Dev string `xml:"dev,attr"`
-	Bus string `xml:"bus,attr"`
-}
-
-type source struct {
-	File string `xml:"file,attr"`
-}
-
-type driver struct {
-	Name string `xml:"name,attr"`
-	Type string `xml:"type,attr"`
-}
-
-type disk struct {
-	Type     string `xml:"type,attr"`
-	Device   string `xml:"device,attr"`
-	Driver   driver `xml:"driver"`
-	Source   source `xml:"source"`
-	Target   target `xml:"target"`
-	ReadOnly string `xml:"readonly,omitempty"`
-}
-
-type devices struct {
-	Emulator    string         `xml:"emulator"`
-	Disks       []disk         `xml:"disk"`
-	Controllers []controller   `xml:"controller"`
-	Interfaces  []netInterface `xml:"interface"`
-	Consoles    []console      `xml:"console"`
-	Videos      []video        `xml:"video"`
-}
-
-type suspendTo struct {
-	Enabled string `xml:"enabled,attr"`
-}
-
-type pm struct {
-	SuspendToMem  suspendTo `xml:"suspend-to-mem"`
-	SuspendToDisk suspendTo `xml:"suspend-to-disk"`
-}
-
-type timer struct {
-	Name       string `xml:"name,attr"`
-	TickPolicy string `xml:"tickpolicy,attr,omitempty"`
-	Present    string `xml:"present,attr,omitempty"`
-}
-
-type clock struct {
-	Offset string  `xml:"offset,attr"`
-	Timers []timer `xml:"timer"`
-}
-
-type cpu struct {
-	Mode string `xml:"mode,attr"`
-}
-
-type features struct {
-	Acpi string `xml:"acpi"`
-	Apic string `xml:"apic"`
-}
-
-type loader struct {
-	ReadOnly string `xml:"readonly,attr"`
-	Type     string `xml:"type,attr"`
-	Value    string `xml:",chardata"`
-}
-
-type boot struct {
-	Dev string `xml:"dev,attr"`
-}
-
-type osType struct {
-	Arch    string `xml:"arch,attr"`
-	Machine string `xml:"machine,attr"`
-	Value   string `xml:",chardata"`
-}
-
-type operatingSystem struct {
-	Type     osType  `xml:"type"`
-	Boot     boot    `xml:"boot"`
-	Firmware string  `xml:"firmware,attr,omitempty"`
-	Loader   *loader `xml:"loader,omitempty" json:",omitempty"`
-}
-
 type domain struct {
-	XMLName       xml.Name        `xml:"domain" json:"-"`
-	Type          string          `xml:"type,attr"`
-	Name          string          `xml:"name"`
-	UUID          string          `xml:"uuid"`
-	Memory        uint            `xml:"memory"`
-	CurrentMemory uint            `xml:"currentMemory"`
-	VCPU          uint            `xml:"vcpu"`
-	OS            operatingSystem `xml:"os"`
-	Features      features        `xml:"features"`
-	CPU           cpu             `xml:"cpu"`
-	Clock         clock           `xml:"clock"`
-	PM            pm              `xml:"pm"`
-	Devices       devices         `xml:"devices"`
+	XMLName       xml.Name `xml:"domain" json:"-"`
+	Type          string   `xml:"type,attr"`
+	Name          string   `xml:"name"`
+	UUID          string   `xml:"uuid"`
+	Memory        uint     `xml:"memory"`
+	CurrentMemory uint     `xml:"currentMemory"`
+	VCPU          uint     `xml:"vcpu"`
+	OS            struct {
+		Type struct {
+			Arch     string `xml:"arch,attr"`
+			Machine  string `xml:"machine,attr"`
+			CharData string `xml:",chardata"`
+		} `xml:"type"`
+		Boot struct {
+			Dev string `xml:"dev,attr"`
+		} `xml:"boot"`
+		Firmware string `xml:"firmware,attr,omitempty"`
+		Loader   *struct {
+			ReadOnly string `xml:"readonly,attr"`
+			Type     string `xml:"type,attr"`
+			CharData string `xml:",chardata"`
+		} `xml:"loader,omitempty" json:",omitempty"`
+	} `xml:"os"`
+	Features struct {
+		Acpi string `xml:"acpi"`
+		Apic string `xml:"apic"`
+	} `xml:"features"`
+	CPU struct {
+		Mode string `xml:"mode,attr"`
+	} `xml:"cpu"`
+	Clock struct {
+		Offset string `xml:"offset,attr"`
+		Timers []struct {
+			Name       string `xml:"name,attr"`
+			TickPolicy string `xml:"tickpolicy,attr,omitempty"`
+			Present    string `xml:"present,attr,omitempty"`
+		} `xml:"timer"`
+	} `xml:"clock"`
+	PM struct {
+		SuspendToMem struct {
+			Enabled string `xml:"enabled,attr"`
+		} `xml:"suspend-to-mem"`
+		SuspendToDisk struct {
+			Enabled string `xml:"enabled,attr"`
+		} `xml:"suspend-to-disk"`
+	} `xml:"pm"`
+	Devices struct {
+		Emulator string `xml:"emulator"`
+		Disks    []struct {
+			Type   string `xml:"type,attr"`
+			Device string `xml:"device,attr"`
+			Driver struct {
+				Name string `xml:"name,attr"`
+				Type string `xml:"type,attr"`
+			} `xml:"driver"`
+			Source struct {
+				File string `xml:"file,attr"`
+			} `xml:"source"`
+			Target struct {
+				Dev string `xml:"dev,attr"`
+				Bus string `xml:"bus,attr"`
+			} `xml:"target"`
+			ReadOnly string `xml:"readonly,omitempty"`
+		} `xml:"disk"`
+		Controllers []struct {
+			Type   string `xml:"type,attr"`
+			Index  string `xml:"index,attr"`
+			Model  string `xml:"model,attr"`
+			Master *struct {
+				StartPort string `xml:"startport,attr,omitempty"`
+			} `xml:"master,omitempty" json:",omitempty"`
+		} `xml:"controller"`
+		Interfaces []struct {
+			Type   string `xml:"type,attr"`
+			Source struct {
+				Network string `xml:"network,attr,omitempty"`
+				Bridge  string `xml:"bridge,attr,omitempty"`
+			} `xml:"source"`
+			MAC *struct {
+				Address string `xml:"address,attr"`
+			} `xml:"mac,omitempty" json:",omitempty"`
+			Model struct {
+				Type string `xml:"type,attr"`
+			} `xml:"model"`
+		} `xml:"interface"`
+		Consoles []struct {
+			Type   string `xml:"type,attr"`
+			Target struct {
+				Type  string `xml:"type,attr"`
+				Alias string `xml:"alias"`
+			} `xml:"target"`
+		} `xml:"console"`
+		Videos []struct {
+			Model struct {
+				Type         string `xml:"type,attr,omitempty"`
+				VRAM         string `xml:"vram,attr,omitempty"`
+				Heads        string `xml:"heads,attr,omitempty"`
+				Acceleration struct {
+					Accel3d string `xml:"accel3d,attr"`
+				} `xml:"acceleration,omitempty"`
+			} `xml:"model,omitempty"`
+		} `xml:"video"`
+	} `xml:"devices"`
 }
 
 func (d domain) String() string {
