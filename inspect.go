@@ -45,6 +45,8 @@ func Inspect(name, outputformat string) error {
 		if err != nil {
 			return err
 		}
+	case "raw":
+		output = []byte(data)
 	default:
 		output = []byte(d.String())
 	}
