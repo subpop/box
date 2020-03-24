@@ -220,6 +220,33 @@ func main() {
 			},
 		},
 		{
+			Name:        "info",
+			Usage:       "Show details about a domain",
+			UsageText:   "vm info [domain name]",
+			Description: "Show details about a domain in a human readable format.",
+			Action: func(c *cli.Context) error {
+				name := c.Args().First()
+				if name == "" {
+					return vm.ErrDomainNameRequired
+				}
+				return vm.Info(name)
+			},
+		},
+		{
+			Name:        "dump",
+			Usage:       "Show XML description of a domain",
+			UsageText:   "vm dump [domain name]",
+			Description: "Show details about a domain in the underlying libvirt XML description.",
+			Action: func(c *cli.Context) error {
+				name := c.Args().First()
+				if name == "" {
+					return vm.ErrDomainNameRequired
+				}
+				return vm.Dump(name)
+			},
+		},
+		{
+			Hidden:      true,
 			Name:        "inspect",
 			Usage:       "Show details about a domain",
 			UsageText:   "vm inspect [command options] [domain name]",
