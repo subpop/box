@@ -111,7 +111,7 @@ type domain struct {
 					Accel3d string `xml:"accel3d,attr"`
 				} `xml:"acceleration,omitempty"`
 			} `xml:"model,omitempty"`
-		} `xml:"video"`
+		} `xml:"video,omitempty"`
 	} `xml:"devices"`
 }
 
@@ -385,8 +385,7 @@ const domainXML string = `
     <controller type="usb" index="0" model="ich9-uhci3">
       <master startport="4"/>
     </controller>
-    <interface type="bridge">
-      <source bridge="virbr0"/>
+    <interface type="user">
       <model type="virtio"/>
     </interface>
 	<console type="pty">
@@ -395,7 +394,6 @@ const domainXML string = `
 	<console type="pty">
 	  <target type="virtio"/>
 	</console>
-	<video/>
   </devices>
 </domain>`
 
