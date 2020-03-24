@@ -82,7 +82,7 @@ func Create(name, image string, disks []string, options CreateOptions, config Cr
 		"-f",
 		"qcow2",
 		"-o",
-		fmt.Sprintf("backing_file=%v", baseImagePath),
+		fmt.Sprintf("backing_file=%v,backing_fmt=qcow2", baseImagePath),
 		overlayImagePath)
 	if err := cmd.Run(); err != nil {
 		return err
