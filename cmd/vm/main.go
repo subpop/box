@@ -34,8 +34,9 @@ func main() {
 					CreateInitialSnapshot: !c.Bool("no-snapshot"),
 				}
 				cfg := vm.CreateConfig{
-					UEFI:  c.Bool("uefi"),
-					Video: c.String("video"),
+					UEFI:    c.Bool("uefi"),
+					Video:   c.String("video"),
+					Network: c.String("network"),
 				}
 				return vm.Create(c.String("name"), image, c.StringSlice("disk"), opts, cfg)
 			},
@@ -71,6 +72,11 @@ func main() {
 					Name:    "video",
 					Usage:   "Use video device `TYPE`",
 					Aliases: []string{"v"},
+				},
+				&cli.StringFlag{
+					Name:    "network",
+					Usage:   "Use bridged network device `BRIDGE`",
+					Aliases: []string{"N"},
 				},
 			},
 		},

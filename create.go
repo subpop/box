@@ -41,6 +41,9 @@ type CreateConfig struct {
 
 	// Use the specified video device
 	Video string
+
+	// Use the specified network bridge device
+	Network string
 }
 
 // Create defines a new domain using name and creating a disk image backed by
@@ -224,6 +227,37 @@ func Create(name, image string, disks []string, options CreateOptions, config Cr
 				Type: config.Video,
 			},
 		})
+	}
+
+	if config.Network != "" {
+		domain.Devices.Interfaces = []struct {
+			Type   string "xml:\"type,attr\""
+			Source struct {
+				Network string "xml:\"network,attr,omitempty\""
+				Bridge  string "xml:\"bridge,attr,omitempty\""
+			} "xml:\"source\""
+			MAC *struct {
+				Address string "xml:\"address,attr\""
+			} "xml:\"mac,omitempty\" json:\",omitempty\""
+			Model struct {
+				Type string "xml:\"type,attr\""
+			} "xml:\"model\""
+		}{
+			{
+				Type: "bridge",
+				Source: struct {
+					Network string "xml:\"network,attr,omitempty\""
+					Bridge  string "xml:\"bridge,attr,omitempty\""
+				}{
+					Bridge: config.Network,
+				},
+				Model: struct {
+					Type string "xml:\"type,attr\""
+				}{
+					Type: "virtio",
+				},
+			},
+		}
 	}
 
 	data, err := xml.Marshal(domain)
