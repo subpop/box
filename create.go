@@ -38,6 +38,9 @@ type CreateOptions struct {
 type CreateConfig struct {
 	// Use UEFI boot instead of BIOS
 	UEFI bool
+
+	// Use the specified video device
+	Video string
 }
 
 // Create defines a new domain using name and creating a disk image backed by
@@ -197,6 +200,30 @@ func Create(name, image string, disks []string, options CreateOptions, config Cr
 			Type:     "pflash",
 			CharData: domainCapabilities.OS.Loader.Value,
 		}
+	}
+
+	if config.Video != "" {
+		domain.Devices.Videos = append(domain.Devices.Videos, struct {
+			Model struct {
+				Type         string "xml:\"type,attr,omitempty\""
+				VRAM         string "xml:\"vram,attr,omitempty\""
+				Heads        string "xml:\"heads,attr,omitempty\""
+				Acceleration struct {
+					Accel3d string "xml:\"accel3d,attr\""
+				} "xml:\"acceleration,omitempty\""
+			} "xml:\"model,omitempty\""
+		}{
+			Model: struct {
+				Type         string "xml:\"type,attr,omitempty\""
+				VRAM         string "xml:\"vram,attr,omitempty\""
+				Heads        string "xml:\"heads,attr,omitempty\""
+				Acceleration struct {
+					Accel3d string "xml:\"accel3d,attr\""
+				} "xml:\"acceleration,omitempty\""
+			}{
+				Type: config.Video,
+			},
+		})
 	}
 
 	data, err := xml.Marshal(domain)

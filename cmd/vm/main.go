@@ -34,7 +34,8 @@ func main() {
 					CreateInitialSnapshot: !c.Bool("no-snapshot"),
 				}
 				cfg := vm.CreateConfig{
-					UEFI: c.Bool("uefi"),
+					UEFI:  c.Bool("uefi"),
+					Video: c.String("video"),
 				}
 				return vm.Create(c.String("name"), image, c.StringSlice("disk"), opts, cfg)
 			},
@@ -65,6 +66,11 @@ func main() {
 				&cli.BoolFlag{
 					Name:  "uefi",
 					Usage: "Use UEFI boot loader",
+				},
+				&cli.StringFlag{
+					Name:    "video",
+					Usage:   "Use video device `TYPE`",
+					Aliases: []string{"v"},
 				},
 			},
 		},
