@@ -121,7 +121,7 @@ func (d domain) String() string {
 	fmt.Fprintf(w, "NAME\t%v\n", d.Name)
 	fmt.Fprintf(w, "ARCH\t%v\n", d.OS.Type.Arch)
 	fmt.Fprintf(w, "VCPU\t%v\n", d.VCPU)
-	fmt.Fprintf(w, "MEMORY\t%v\n", humanize.Bytes(uint64(d.Memory)))
+	fmt.Fprintf(w, "MEMORY\t%v\n", humanize.IBytes(d.Memory*1024))
 	for i, disk := range d.Devices.Disks {
 		fmt.Fprintf(w, "DISK%v\t%v\n", i, disk.Source.File)
 	}
