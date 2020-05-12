@@ -40,6 +40,7 @@ func main() {
 					UEFI:    c.Bool("uefi"),
 					Video:   c.String("video"),
 					Network: c.String("network"),
+					Memory:  c.String("memory"),
 				}
 				return vm.Create(c.String("name"), image, c.StringSlice("disk"), opts, cfg)
 			},
@@ -80,6 +81,12 @@ func main() {
 					Name:    "network",
 					Usage:   "Use bridged network device `BRIDGE`",
 					Aliases: []string{"N"},
+				},
+				&cli.StringFlag{
+					Name:    "memory",
+					Usage:   "Create a domain with `MEM` RAM",
+					Aliases: []string{"m"},
+					Value:   "256 MB",
 				},
 			},
 		},
