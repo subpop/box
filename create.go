@@ -11,6 +11,7 @@ import (
 	"path/filepath"
 	"time"
 
+	"github.com/dustin/go-humanize"
 	petname "github.com/dustinkirkland/golang-petname"
 	"github.com/google/uuid"
 	"github.com/libvirt/libvirt-go"
@@ -44,6 +45,9 @@ type CreateConfig struct {
 
 	// Use the specified network bridge device
 	Network string
+
+	// Use the specified amount of RAM
+	Memory string
 }
 
 // Create defines a new domain using name and creating a disk image backed by
@@ -185,6 +189,16 @@ func Create(name, image string, disks []string, options CreateOptions, config Cr
 			},
 		}
 		domain.Devices.Disks = append(domain.Devices.Disks, disk)
+	}
+
+	if config.Memory != "" {
+		m, err := humanize.ParseBytes(config.Memory)
+		if err != nil {
+			return InvalidArgumentErr{"memory", err}
+		}
+		// libvirt domains expect memory in KiB
+		domain.Memory = m / 1024
+		domain.CurrentMemory = m / 1024
 	}
 
 	if config.UEFI {
