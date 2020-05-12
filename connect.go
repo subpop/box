@@ -2,6 +2,7 @@ package vm
 
 import (
 	"bufio"
+	"encoding/xml"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -76,38 +77,25 @@ func connectSSH(dom *libvirt.Domain, user, identity string) error {
 		HostKeyCallback: ssh.InsecureIgnoreHostKey(),
 	}
 
-	interfaces, err := dom.ListAllInterfaceAddresses(libvirt.DOMAIN_INTERFACE_ADDRESSES_SRC_ARP)
+	data, err := dom.GetXMLDesc(libvirt.DOMAIN_XML_SECURE)
 	if err != nil {
 		return err
 	}
-	if len(interfaces) == 0 {
-		name, err := dom.GetName()
-		if err != nil {
-			return err
-		}
-		return fmt.Errorf("error: no interfaces detected for %v", name)
-	}
-	addrs := make([]string, 0)
-	for _, iface := range interfaces {
-		for _, addr := range iface.Addrs {
-			if addr.Type == int(libvirt.IP_ADDR_TYPE_IPV4) {
-				addrs = append(addrs, addr.Addr)
-			}
-		}
+	var domain domain
+	if err := xml.Unmarshal([]byte(data), &domain); err != nil {
+		return err
 	}
 
 	var addr string
-	if len(addrs) > 1 {
-		fmt.Println("Multiple addresses detected.")
-		for i, addr := range addrs {
-			fmt.Printf("%v: %v\n", i+1, addr)
+	for _, iface := range domain.Devices.Interfaces {
+		ip, err := findIP(iface.MAC.Address)
+		if err != nil {
+			return err
 		}
-		fmt.Println("Select address: ")
-		var response int
-		fmt.Scan(&response)
-		addr = addrs[response-1]
-	} else {
-		addr = addrs[0]
+		if ip != "" {
+			addr = ip
+			break
+		}
 	}
 
 	conn, err := ssh.Dial("tcp", fmt.Sprintf("%v:22", addr), config)
