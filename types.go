@@ -14,8 +14,8 @@ type domain struct {
 	Type          string   `xml:"type,attr"`
 	Name          string   `xml:"name"`
 	UUID          string   `xml:"uuid"`
-	Memory        uint     `xml:"memory"`
-	CurrentMemory uint     `xml:"currentMemory"`
+	Memory        uint64   `xml:"memory"`
+	CurrentMemory uint64   `xml:"currentMemory"`
 	VCPU          uint     `xml:"vcpu"`
 	OS            struct {
 		Type struct {
