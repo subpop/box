@@ -289,6 +289,20 @@ func main() {
 			},
 		},
 		{
+			Hidden: true,
+			Name:   "net",
+			Usage:  "Manage networks",
+			Subcommands: []*cli.Command{
+				{
+					Name:  "list",
+					Usage: "List networks",
+					Action: func(c *cli.Context) error {
+						return vm.NetList()
+					},
+				},
+			},
+		},
+		{
 			Name:  "image",
 			Usage: "Manage backing disk images",
 			Subcommands: []*cli.Command{
