@@ -37,6 +37,16 @@ var ErrURLOrPathRequired = MissingPositionalArgErr{
 	name: "URL or path",
 }
 
+// An InvalidArgumentErr occurs when a value passed to an argument is invalid.
+type InvalidArgumentErr struct {
+	name string
+	err  error
+}
+
+func (e InvalidArgumentErr) Error() string {
+	return "error: invalid argument: " + e.name + ": " + e.err.Error()
+}
+
 // An UnsupportedFormatErr occurs when a command is invoked that does not
 // support the specified format.
 type UnsupportedFormatErr struct {
