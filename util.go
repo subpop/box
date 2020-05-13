@@ -114,7 +114,7 @@ func transfer(filePath string, quiet bool) (string, error) {
 	defer w.Close()
 
 	var bytesWritten uint64
-	err = copy(w, r, func(buf []byte) {
+	err = copyBytes(w, r, func(buf []byte) {
 		if !quiet {
 			bytesWritten += uint64(len(buf))
 			fmt.Printf("\r%s", strings.Repeat(" ", 40))
@@ -164,7 +164,7 @@ func download(rawurl string, quiet bool) (string, error) {
 	defer w.Close()
 
 	var bytesWritten uint64
-	err = copy(w, resp.Body, func(buf []byte) {
+	err = copyBytes(w, resp.Body, func(buf []byte) {
 		if !quiet {
 			bytesWritten += uint64(len(buf))
 			fmt.Printf("\r%s", strings.Repeat(" ", 40))
@@ -217,7 +217,7 @@ func decompress(filePath string, quiet bool) (string, error) {
 	defer w.Close()
 
 	var bytesWritten uint64
-	err = copy(w, g, func(buf []byte) {
+	err = copyBytes(w, g, func(buf []byte) {
 		if !quiet {
 			bytesWritten += uint64(len(buf))
 			fmt.Printf("\r%s", strings.Repeat(" ", 40))
@@ -301,7 +301,7 @@ func unarchive(filePath string, quiet bool) (string, error) {
 			defer w.Close()
 
 			var bytesWritten uint64
-			err = copy(w, tr, func(buf []byte) {
+			err = copyBytes(w, tr, func(buf []byte) {
 				if !quiet {
 					bytesWritten += uint64(len(buf))
 					fmt.Printf("\r%s", strings.Repeat(" ", 40))
@@ -324,9 +324,9 @@ func unarchive(filePath string, quiet bool) (string, error) {
 	return inspect(destFilePath, quiet)
 }
 
-// copy transfers bytes from src to dest, piping through a TeeReader, calling
+// copyBytes transfers bytes from src to dest, piping through a TeeReader, calling
 // writeFunc on each read from src.
-func copy(dest io.Writer, src io.Reader, writeFunc func(buf []byte)) error {
+func copyBytes(dest io.Writer, src io.Reader, writeFunc func(buf []byte)) error {
 	w := printWriter{
 		print: writeFunc,
 	}
