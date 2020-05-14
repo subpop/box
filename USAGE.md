@@ -46,13 +46,19 @@ Creates a new domain from the specified image
 
 **--disk, -d**="": Attach `FILE` to the domain as a secondary disk
 
+**--memory, -m**="": Create a domain with `MEM` RAM (default: 256 MB)
+
 **--name, -n**="": Assign `NAME` to the domain
+
+**--network, -N**="": Use bridged network device `BRIDGE`
 
 **--no-snapshot**: Disable taking an initial snapshot upon creation
 
 **--transient, -t**: Create a non-persistent domain
 
 **--uefi**: Use UEFI boot loader
+
+**--video, -v**="": Use video device `TYPE`
 
 ## list
 
@@ -100,11 +106,13 @@ Connect to a running domain
 
 **--user, -u**="": User to connect as over SSH (default: root)
 
-## inspect
+## info
 
 Show details about a domain
 
-**--format, -f**="": Specify output format
+## dump
+
+Show XML description of a domain
 
 ## image
 
@@ -181,6 +189,18 @@ Remove a snapshot for a domain
 Revert a domain to snapshot
 
 **--snapshot, -s**="": Revert to `SNAPSHOT`
+
+## capabilities
+
+Get details on hypervisor capabilities
+
+**--format, -f**="": Specify output format (default: xml)
+
+## domain-capabilities
+
+Get details on domain capabilities
+
+**--format, -f**="": Specify output format (default: xml)
 
 ## help, h
 
