@@ -144,6 +144,7 @@ func main() {
 		},
 		{
 			Name:      "up",
+			Aliases:   []string{"start"},
 			Usage:     "Start a domain",
 			UsageText: "vm up [command options] [domain name]",
 			Action: func(c *cli.Context) error {
@@ -163,6 +164,7 @@ func main() {
 		},
 		{
 			Name:      "down",
+			Aliases:   []string{"stop"},
 			Usage:     "Stop a domain",
 			UsageText: "vm down [command options] [domain name]",
 			Action: func(c *cli.Context) error {
