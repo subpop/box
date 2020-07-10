@@ -107,7 +107,7 @@ type domain struct {
 				Type         string `xml:"type,attr,omitempty"`
 				VRAM         string `xml:"vram,attr,omitempty"`
 				Heads        string `xml:"heads,attr,omitempty"`
-				Acceleration struct {
+				Acceleration *struct {
 					Accel3d string `xml:"accel3d,attr"`
 				} `xml:"acceleration,omitempty"`
 			} `xml:"model,omitempty"`
