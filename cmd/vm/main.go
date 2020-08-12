@@ -152,7 +152,7 @@ func main() {
 				if name == "" {
 					return vm.ErrDomainNameRequired
 				}
-				return vm.Up(c.String("connect"), name, c.Bool("connect"))
+				return vm.Up(c.Lineage()[1].String("connect"), name, c.Bool("connect"))
 			},
 			Flags: []cli.Flag{
 				&cli.BoolFlag{
