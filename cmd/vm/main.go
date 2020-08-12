@@ -3,11 +3,15 @@ package main
 import (
 	"fmt"
 	"io"
+	"io/ioutil"
+	"log"
 	"os"
+	"path/filepath"
 
 	"github.com/subpop/vm"
 
 	"github.com/urfave/cli/v2"
+	"github.com/urfave/cli/v2/altsrc"
 )
 
 func main() {
@@ -22,10 +26,34 @@ func main() {
 	app.EnableBashCompletion = true
 	app.Flags = []cli.Flag{
 		&cli.StringFlag{
+			Name:      "config",
+			Usage:     "Load configuration from `FILE`",
+			TakesFile: true,
+			Value: func() string {
+				configDir, err := os.UserConfigDir()
+				if err != nil {
+					log.Println(err)
+					return ""
+				}
+				configFilePath := filepath.Join(configDir, "vm", "config.toml")
+				if _, err := os.Stat(configFilePath); os.IsNotExist(err) {
+					if err := os.MkdirAll(filepath.Join(configDir, "vm"), 0755); err != nil {
+						log.Println(err)
+						return ""
+					}
+					if err := ioutil.WriteFile(configFilePath, []byte(`connect = "qemu:///session"`), 0644); err != nil {
+						log.Println(err)
+						return ""
+					}
+				}
+				return configFilePath
+			}(),
+		},
+		altsrc.NewStringFlag(&cli.StringFlag{
 			Name:    "connect",
 			Usage:   "Specify hypervisor connection URI",
 			Aliases: []string{"C"},
-		},
+		}),
 		&cli.BoolFlag{
 			Name:   "generate-man-page",
 			Hidden: true,
@@ -563,6 +591,7 @@ func main() {
 		},
 	}
 	app.BashComplete = bashComplete
+	app.Before = altsrc.InitInputSourceWithContext(app.Flags, altsrc.NewTomlSourceFromFlagFunc("config"))
 	app.Action = func(c *cli.Context) error {
 		type GenerationFunc func() (string, error)
 		var generationFunc GenerationFunc
