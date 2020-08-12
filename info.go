@@ -9,8 +9,8 @@ import (
 )
 
 // Info prints detailed information about the given domain.
-func Info(name string) error {
-	conn, err := libvirt.NewConnect("")
+func Info(uri, name string) error {
+	conn, err := libvirt.NewConnect(uri)
 	if err != nil {
 		return err
 	}

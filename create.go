@@ -53,7 +53,7 @@ type CreateConfig struct {
 // Create defines a new domain using name and creating a disk image backed by
 // image. If connect is true, a console is attached to the newly created domain.
 // If transient is true, the domain is destroy upon shutdown.
-func Create(name, image string, disks []string, options CreateOptions, config CreateConfig) error {
+func Create(uri, name, image string, disks []string, options CreateOptions, config CreateConfig) error {
 	if name == "" {
 		name = petname.Generate(2, "-")
 	}
@@ -203,7 +203,7 @@ func Create(name, image string, disks []string, options CreateOptions, config Cr
 
 	if config.UEFI {
 		options.CreateInitialSnapshot = false
-		domainCapabilities, err := getDomainCapabilities()
+		domainCapabilities, err := getDomainCapabilities(uri)
 		if err != nil {
 			return err
 		}
@@ -279,7 +279,7 @@ func Create(name, image string, disks []string, options CreateOptions, config Cr
 		return err
 	}
 
-	conn, err := libvirt.NewConnect("")
+	conn, err := libvirt.NewConnect(uri)
 	if err != nil {
 		return err
 	}
@@ -297,7 +297,7 @@ func Create(name, image string, disks []string, options CreateOptions, config Cr
 			return err
 		}
 		if options.CreateInitialSnapshot {
-			err = SnapshotCreate(name, "Initial state")
+			err = SnapshotCreate(uri, name, "Initial state")
 			if err != nil {
 				return err
 			}

@@ -7,8 +7,8 @@ import (
 )
 
 // Up looks up a defined domain by name and starts it.
-func Up(name string, connectAfterUp bool) error {
-	conn, err := libvirt.NewConnect("")
+func Up(uri, name string, connectAfterUp bool) error {
+	conn, err := libvirt.NewConnect(uri)
 	if err != nil {
 		return err
 	}

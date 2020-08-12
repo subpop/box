@@ -8,10 +8,10 @@ import (
 )
 
 // SnapshotCreate saves a new snapshot for the given domain.
-func SnapshotCreate(domainName, snapshotName string) error {
+func SnapshotCreate(uri, domainName, snapshotName string) error {
 	var err error
 
-	conn, err := libvirt.NewConnect("")
+	conn, err := libvirt.NewConnect(uri)
 	if err != nil {
 		return err
 	}

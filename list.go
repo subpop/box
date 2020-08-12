@@ -12,8 +12,8 @@ import (
 // List prints a list of known domains. If active is true, active domains are
 // included in the list. If inactive is true, inactive domains are included
 // in the list.
-func List(active, inactive bool) error {
-	conn, err := libvirt.NewConnect("")
+func List(uri string, active, inactive bool) error {
+	conn, err := libvirt.NewConnect(uri)
 	if err != nil {
 		return err
 	}

@@ -21,10 +21,10 @@ const escapeSequence = byte(']') ^ 0x40
 
 // Connect opens a connection to a domain by name. The mode argument determines
 // the connection mode: either "ssh" or "console".
-func Connect(name string, mode string, user, identity string) error {
+func Connect(uri string, name string, mode string, user, identity string) error {
 	var err error
 
-	conn, err := libvirt.NewConnect("")
+	conn, err := libvirt.NewConnect(uri)
 	if err != nil {
 		return err
 	}

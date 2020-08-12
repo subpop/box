@@ -10,8 +10,8 @@ import (
 // Down looks up an active domain by name and stops it. If force is true, the
 // domain is stopped without prompting for confirmation. If graceful is true,
 // the domain is shutdown gracefully.
-func Down(name string, force bool, graceful bool) error {
-	conn, err := libvirt.NewConnect("")
+func Down(uri, name string, force bool, graceful bool) error {
+	conn, err := libvirt.NewConnect(uri)
 	if err != nil {
 		return err
 	}

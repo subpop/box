@@ -10,8 +10,8 @@ import (
 )
 
 // DomainCapabilities prints detailed information about the domain capabilities.
-func DomainCapabilities(outputformat string) error {
-	cap, err := getDomainCapabilities()
+func DomainCapabilities(uri, outputformat string) error {
+	cap, err := getDomainCapabilities(uri)
 	if err != nil {
 		return err
 	}
@@ -36,13 +36,13 @@ func DomainCapabilities(outputformat string) error {
 	return nil
 }
 
-func getDomainCapabilities() (*domainCapabilities, error) {
-	conn, err := libvirt.NewConnect("")
+func getDomainCapabilities(uri string) (*domainCapabilities, error) {
+	conn, err := libvirt.NewConnect(uri)
 	if err != nil {
 		return nil, err
 	}
 
-	capabilities, err := getCapabilities()
+	capabilities, err := getCapabilities(uri)
 	if err != nil {
 		return nil, err
 	}

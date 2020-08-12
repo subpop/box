@@ -42,7 +42,7 @@ func main() {
 					Network: c.String("network"),
 					Memory:  c.String("memory"),
 				}
-				return vm.Create(c.String("name"), image, c.StringSlice("disk"), opts, cfg)
+				return vm.Create(c.String("connect"), c.String("name"), image, c.StringSlice("disk"), opts, cfg)
 			},
 			Flags: []cli.Flag{
 				&cli.StringFlag{
@@ -109,7 +109,7 @@ func main() {
 					inactive = true
 				}
 
-				return vm.List(active, inactive)
+				return vm.List(c.String("connect"), active, inactive)
 			},
 			Flags: []cli.Flag{
 				&cli.BoolFlag{
@@ -132,7 +132,7 @@ func main() {
 				if name == "" {
 					return vm.ErrDomainNameRequired
 				}
-				return vm.Destroy(name, c.Bool("force"))
+				return vm.Destroy(c.String("connect"), name, c.Bool("force"))
 			},
 			Flags: []cli.Flag{
 				&cli.BoolFlag{
@@ -152,7 +152,7 @@ func main() {
 				if name == "" {
 					return vm.ErrDomainNameRequired
 				}
-				return vm.Up(name, c.Bool("connect"))
+				return vm.Up(c.String("connect"), name, c.Bool("connect"))
 			},
 			Flags: []cli.Flag{
 				&cli.BoolFlag{
@@ -172,7 +172,7 @@ func main() {
 				if name == "" {
 					return vm.ErrDomainNameRequired
 				}
-				return vm.Down(name, c.Bool("force"), c.Bool("graceful"))
+				return vm.Down(c.String("connect"), name, c.Bool("force"), c.Bool("graceful"))
 			},
 			Flags: []cli.Flag{
 				&cli.BoolFlag{
@@ -196,7 +196,7 @@ func main() {
 				if name == "" {
 					return vm.ErrDomainNameRequired
 				}
-				return vm.Restart(name, c.Bool("force"), c.Bool("graceful"))
+				return vm.Restart(c.String("connect"), name, c.Bool("force"), c.Bool("graceful"))
 			},
 			Flags: []cli.Flag{
 				&cli.BoolFlag{
@@ -221,7 +221,7 @@ func main() {
 				if name == "" {
 					return vm.ErrDomainNameRequired
 				}
-				return vm.Connect(name, c.String("mode"), c.String("user"), c.String("identity"))
+				return vm.Connect(c.String("connect"), name, c.String("mode"), c.String("user"), c.String("identity"))
 			},
 			Flags: []cli.Flag{
 				&cli.StringFlag{
@@ -253,7 +253,7 @@ func main() {
 				if name == "" {
 					return vm.ErrDomainNameRequired
 				}
-				return vm.Info(name)
+				return vm.Info(c.String("connect"), name)
 			},
 		},
 		{
@@ -266,7 +266,7 @@ func main() {
 				if name == "" {
 					return vm.ErrDomainNameRequired
 				}
-				return vm.Dump(name)
+				return vm.Dump(c.String("connect"), name)
 			},
 		},
 		{
@@ -280,7 +280,7 @@ func main() {
 				if name == "" {
 					return vm.ErrDomainNameRequired
 				}
-				return vm.Inspect(name, c.String("format"))
+				return vm.Inspect(c.String("connect"), name, c.String("format"))
 			},
 			Flags: []cli.Flag{
 				&cli.StringFlag{
@@ -299,7 +299,7 @@ func main() {
 					Name:  "list",
 					Usage: "List networks",
 					Action: func(c *cli.Context) error {
-						return vm.NetList()
+						return vm.NetList(c.String("connect"))
 					},
 				},
 			},
@@ -446,7 +446,7 @@ func main() {
 						if name == "" {
 							return vm.ErrDomainNameRequired
 						}
-						return vm.SnapshotList(name)
+						return vm.SnapshotList(c.String("connect"), name)
 					},
 				},
 				{
@@ -458,7 +458,7 @@ func main() {
 						if domain == "" {
 							return vm.ErrDomainNameRequired
 						}
-						return vm.SnapshotCreate(domain, c.String("name"))
+						return vm.SnapshotCreate(c.String("connect"), domain, c.String("name"))
 					},
 					Flags: []cli.Flag{
 						&cli.StringFlag{
@@ -477,7 +477,7 @@ func main() {
 						if domain == "" {
 							return vm.ErrDomainNameRequired
 						}
-						return vm.SnapshotRemove(domain, c.String("snapshot"))
+						return vm.SnapshotRemove(c.String("connect"), domain, c.String("snapshot"))
 					},
 					Flags: []cli.Flag{
 						&cli.StringFlag{
@@ -497,7 +497,7 @@ func main() {
 						if domain == "" {
 							return vm.ErrDomainNameRequired
 						}
-						return vm.SnapshotRevert(domain, c.String("snapshot"))
+						return vm.SnapshotRevert(c.String("connect"), domain, c.String("snapshot"))
 					},
 					Flags: []cli.Flag{
 						&cli.StringFlag{
@@ -515,7 +515,7 @@ func main() {
 			Usage:     "Get details on hypervisor capabilities",
 			UsageText: "vm capabilities",
 			Action: func(c *cli.Context) error {
-				return vm.Capabilities(c.String("format"))
+				return vm.Capabilities(c.String("connect"), c.String("format"))
 			},
 			Flags: []cli.Flag{
 				&cli.StringFlag{
@@ -531,7 +531,7 @@ func main() {
 			Usage:     "Get details on domain capabilities",
 			UsageText: "vm domain-capabilities",
 			Action: func(c *cli.Context) error {
-				return vm.DomainCapabilities(c.String("format"))
+				return vm.DomainCapabilities(c.String("connect"), c.String("format"))
 			},
 			Flags: []cli.Flag{
 				&cli.StringFlag{
@@ -544,6 +544,11 @@ func main() {
 		},
 	}
 	app.Flags = []cli.Flag{
+		&cli.StringFlag{
+			Name:    "connect",
+			Usage:   "Specify hypervisor connection URI",
+			Aliases: []string{"C"},
+		},
 		&cli.BoolFlag{
 			Name:   "generate-man-page",
 			Hidden: true,

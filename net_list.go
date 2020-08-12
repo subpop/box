@@ -9,8 +9,8 @@ import (
 )
 
 // NetList prints a list of all defined networks known to libvirt.
-func NetList() error {
-	conn, err := libvirt.NewConnect("")
+func NetList(uri string) error {
+	conn, err := libvirt.NewConnect(uri)
 	if err != nil {
 		return err
 	}

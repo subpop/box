@@ -7,10 +7,10 @@ import (
 )
 
 // SnapshotRevert discards the current domain state, reverting it to snapshotName.
-func SnapshotRevert(domainName, snapshotName string) error {
+func SnapshotRevert(uri, domainName, snapshotName string) error {
 	var err error
 
-	conn, err := libvirt.NewConnect("")
+	conn, err := libvirt.NewConnect(uri)
 	if err != nil {
 		return err
 	}

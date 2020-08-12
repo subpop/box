@@ -8,8 +8,8 @@ import (
 )
 
 // Dump prints the XML description of the given domain.
-func Dump(name string) error {
-	conn, err := libvirt.NewConnect("")
+func Dump(uri, name string) error {
+	conn, err := libvirt.NewConnect(uri)
 	if err != nil {
 		return err
 	}

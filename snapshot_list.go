@@ -12,10 +12,10 @@ import (
 )
 
 // SnapshotList prints a table of snapshots for the given domain.
-func SnapshotList(name string) error {
+func SnapshotList(uri, name string) error {
 	var err error
 
-	conn, err := libvirt.NewConnect("")
+	conn, err := libvirt.NewConnect(uri)
 	if err != nil {
 		return err
 	}

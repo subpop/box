@@ -10,8 +10,8 @@ import (
 )
 
 // Capabilities prints detailed information about the host hypervisor capabilities
-func Capabilities(outputformat string) error {
-	cap, err := getCapabilities()
+func Capabilities(uri string, outputformat string) error {
+	cap, err := getCapabilities(uri)
 	if err != nil {
 		return err
 	}
@@ -36,8 +36,8 @@ func Capabilities(outputformat string) error {
 	return nil
 }
 
-func getCapabilities() (*capabilities, error) {
-	conn, err := libvirt.NewConnect("")
+func getCapabilities(uri string) (*capabilities, error) {
+	conn, err := libvirt.NewConnect(uri)
 	if err != nil {
 		return nil, err
 	}

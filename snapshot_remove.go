@@ -7,10 +7,10 @@ import (
 )
 
 // SnapshotRemove deletes the given snapshot for the given domain.
-func SnapshotRemove(domainName, snapshotName string) error {
+func SnapshotRemove(uri, domainName, snapshotName string) error {
 	var err error
 
-	conn, err := libvirt.NewConnect("")
+	conn, err := libvirt.NewConnect(uri)
 	if err != nil {
 		return err
 	}

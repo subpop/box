@@ -11,8 +11,8 @@ import (
 // domain is restarted without prompting for user confirmation first. If
 // graceful is false, the dom is reset forcibly rather than being sent a
 // restart signal.
-func Restart(name string, force bool, graceful bool) error {
-	conn, err := libvirt.NewConnect("")
+func Restart(uri, name string, force bool, graceful bool) error {
+	conn, err := libvirt.NewConnect(uri)
 	if err != nil {
 		return err
 	}

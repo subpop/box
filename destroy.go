@@ -11,8 +11,8 @@ import (
 
 // Destroy stops and undefines a domain by name. If force is true, the
 // domain is destroyed without prompting for confirmation.
-func Destroy(name string, force bool) error {
-	conn, err := libvirt.NewConnect("")
+func Destroy(uri, name string, force bool) error {
+	conn, err := libvirt.NewConnect(uri)
 	if err != nil {
 		return err
 	}

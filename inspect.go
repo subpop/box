@@ -10,8 +10,8 @@ import (
 )
 
 // Inspect prints detailed information about the given domain.
-func Inspect(name, outputformat string) error {
-	conn, err := libvirt.NewConnect("")
+func Inspect(uri, name, outputformat string) error {
+	conn, err := libvirt.NewConnect(uri)
 	if err != nil {
 		return err
 	}
