@@ -20,6 +20,25 @@ func main() {
 	app.Usage = "control virtual machines"
 	app.Description = "`vm` is a program to manage and interact with virtual machines."
 	app.EnableBashCompletion = true
+	app.Flags = []cli.Flag{
+		&cli.StringFlag{
+			Name:    "connect",
+			Usage:   "Specify hypervisor connection URI",
+			Aliases: []string{"C"},
+		},
+		&cli.BoolFlag{
+			Name:   "generate-man-page",
+			Hidden: true,
+		},
+		&cli.BoolFlag{
+			Name:   "generate-fish-completion",
+			Hidden: true,
+		},
+		&cli.BoolFlag{
+			Name:   "generate-markdown",
+			Hidden: true,
+		},
+	}
 	app.Commands = []*cli.Command{
 		{
 			Name:        "create",
@@ -541,25 +560,6 @@ func main() {
 					Value:   "xml",
 				},
 			},
-		},
-	}
-	app.Flags = []cli.Flag{
-		&cli.StringFlag{
-			Name:    "connect",
-			Usage:   "Specify hypervisor connection URI",
-			Aliases: []string{"C"},
-		},
-		&cli.BoolFlag{
-			Name:   "generate-man-page",
-			Hidden: true,
-		},
-		&cli.BoolFlag{
-			Name:   "generate-fish-completion",
-			Hidden: true,
-		},
-		&cli.BoolFlag{
-			Name:   "generate-markdown",
-			Hidden: true,
 		},
 	}
 	app.BashComplete = bashComplete
