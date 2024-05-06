@@ -10,6 +10,5 @@ require (
 	github.com/subpop/go-ini v0.1.4
 	github.com/ulikunitz/xz v0.5.8
 	github.com/urfave/cli/v2 v2.0.0
-	golang.org/x/crypto v0.0.0-20191002192127-34f69633bfdc
-	golang.org/x/sys v0.1.0 // indirect
+	golang.org/x/crypto v0.17.0
 )
